@@ -4,10 +4,12 @@ export class RandomPlayer {
     this.game = game;
   }
 
-  play(board) {
+  play= (board) => {
     let a = Math.floor(Math.random() * this.game.getActionSize());
     // a = np.random.randint(self.game.getActionSize()) [0, low)
-    const valids = this.game.getValidMoves(board, 1);
+    let valids = this.game.getValidMoves(board, 1);
+    valids = valids.tolist();
+
     while (valids[a] !== 1) {
       a = Math.floor(Math.random() * this.game.getActionSize());
     }
@@ -22,7 +24,7 @@ export class HumanTicTacToePlayer {
     this.game = game;
   }
 
-  play(board) {
+  play= (board) => {
 
   }
 }

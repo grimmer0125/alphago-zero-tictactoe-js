@@ -11,8 +11,8 @@ export class TicTacToeGame extends Game {
     this.n = n;
   }
 
-  getInitBoard() {
-    const b = Board(this.n);
+  getInitBoardPiece() {
+    const b = new Board(this.n);
     return nj.array(b.pieces);
     // return np.array(b.pieces)
   }
@@ -39,12 +39,12 @@ export class TicTacToeGame extends Game {
 
     // b = Board(self.n)
     // b.pieces = np.copy(board)
-    const b = Board(this.n);
-    b.pieces = board.clone();
+    const b = new Board(this.n);
+    b.pieces = board.tolist();
 
     const move = { x: Math.floor(action / this.n), y: (action % this.n) };
     b.execute_move(move, player);
-    return { board: b.pieces, curPlayer: -player };
+    return { board: nj.array(b.pieces), curPlayer: -player };
   }
 
   // return a list, 會受getCanonicalForm影響嗎? 不會.
@@ -52,9 +52,9 @@ export class TicTacToeGame extends Game {
   // # return a fixed size binary vector
   // valids = [0]*this.getActionSize()
     const valids = Array(this.getActionSize()).fill(0);
-    const b = Board(this.n);
+    const b = new Board(this.n);
     // b.pieces = np.copy(board)
-    b.pieces = board.clone();
+    b.pieces = board.tolist();
 
     const legalMoves = b.get_legal_moves(player);
     if (legalMoves.length === 0) {
@@ -63,7 +63,7 @@ export class TicTacToeGame extends Game {
       return nj.array(valids);
     }
 
-    legalMoves.array.forEach((element) => {
+    legalMoves.forEach((element) => {
       const { x, y } = element;
       valids[(this.n * x) + y] = 1; // flattern to vector
     });
@@ -72,11 +72,11 @@ export class TicTacToeGame extends Game {
     return nj.array(valids);
   }
 
-  getGameEnded(board, player) {
+  getGameEnded(boardPiece, player) {
     // # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
     // # player = 1
-    const b = Board(self.n);
-    b.pieces = board.clone();
+    const b = new Board(this.n);
+    b.pieces = boardPiece.tolist();
 
     if (b.is_win(player)) {
       return 1;
@@ -95,7 +95,7 @@ export class TicTacToeGame extends Game {
   getCanonicalForm(board, player) {
     // # return state if player==1, else return -state if player==-1
     // return player*board
-    return nj.multiply(a, player);
+    return nj.multiply(board, player);
   }
 
   // used by MCTS
@@ -105,11 +105,13 @@ export class TicTacToeGame extends Game {
   }
 }
 
-const log = '';
+let log = '';
 function print(newLog, end) {
-  log+=newLog;
-  if(typeof end !== "undefined" && end !== null) {
-    log+=end;
+  log += newLog;
+  if (typeof end !== 'undefined' && end !== null) {
+    log += end;
+  } else {
+    log += '\n';
   }
 }
 function flush() {
@@ -119,48 +121,47 @@ function flush() {
 export function display(board) {
   log = '';
   const n = board.shape[0];
-  let list = board.tolist();
-  print("   ", "");
-  for (let y=0; y<n; y++) {
-    print (y+"", "");
+  const list = board.tolist();
+  print('   ', '');
+  for (let y = 0; y < n; y++) {
+    print(`${y}`, '');
   }
   // for y in range(n):
   //     print (y,"", end="")
 
-  print("");
-  print("  ", "");
+  print('');
+  print('  ', '');
   // for _ in range(n):
   //     print ("-", end="-")
-  for (let _=0; _<n; _++) {
-    print ("-", "-");
+  for (let _ = 0; _ < n; _++) {
+    print('-', '-');
   }
 
-  print("--");
-  for (let y=0; y<n; y++) {
-    print(y+"|","");    //# print the row #
-    for (let x=0; x<n; x++) {
-      const piece = list[y][x];    //# get the piece to print
+  print('--');
+  for (let y = 0; y < n; y++) {
+    print(`${y}|`, ''); // # print the row #
+    for (let x = 0; x < n; x++) {
+      const piece = list[y][x]; // # get the piece to print
       if (piece == -1) {
-        print("X ","")
-      }
-      else if (piece == 1) {
-        print("O ",end="")
+        print('X ', '');
+      } else if (piece == 1) {
+        print('O ', '');
+      } else if (x == n) {
+        print('-', '');
       } else {
-        if (x==n) {
-          print("-",end="")
-        }
-        else {
-          print("- ",end="")  
-        }
+        print('- ', '');
       }
-       
     }
-    print("|");
+    print('|');
   }
 
-  print("  ", end="")
-  for _ in range(n):
-      print ("-", end="-")
-  print("--")
+  print('  ', '');
+  for (let _ = 0; _ < n; _++) {
+    print('-', '-');
+  }
+  // for _ in range(n):
+  //     print ("-", end="-")
+  print('--');
   flush();
+  console.log('flush');
 }

@@ -10,35 +10,36 @@ export default class Arena {
   playGame(verbose = false) {
     const players = [this.player2, null, this.player1];
     let curPlayer = 1;
-    let board = this.game.getInitBoard();
-    const it = 0;
-    while (this.game.getGameEnded(board, curPlayer) === 0) {
+    let boardPiece = this.game.getInitBoardPiece();
+    let it = 0;
+    while (this.game.getGameEnded(boardPiece, curPlayer) === 0) {
       // curPlayer: 1 or -1
       it += 1;
       if (verbose) {
-        console.log(`Turn ${it}Player ${curPlayer}`);
-        this.display(board);
+        console.log(`Turn ${it}. Player ${curPlayer}`);
+        this.display(boardPiece);
       }
-      const action = players[curPlayer + 1](this.game.getCanonicalForm(board, curPlayer));
-      const valids = this.game.getValidMoves(this.game.getCanonicalForm(board, curPlayer), 1);
+      const action = players[curPlayer + 1].play(this.game.getCanonicalForm(boardPiece, curPlayer));
+      let valids = this.game.getValidMoves(this.game.getCanonicalForm(boardPiece, curPlayer), 1);
+      valids = valids.tolist();
 
       if (valids[action] == 0) {
         console.log(action);
         // assert valids[action] >0
         throw 'can not find out valid action, something wrong';
       }
-      const nextState = this.game.getNextState(board, curPlayer, action);
-      board = nextState.board;
+      const nextState = this.game.getNextState(boardPiece, curPlayer, action);
+      boardPiece = nextState.board;
       curPlayer = nextState.curPlayer;
     }
 
     if (verbose) {
-      console.log(`Game over: Turn ${it}Result ${this.game.getGameEnded(board, 1)}`);
+      console.log(`Game over: Turn ${it}. Result ${this.game.getGameEnded(boardPiece, 1)}`);
       // assert(self.display)
-      this.display(board);
+      this.display(boardPiece);
     }
 
-    return this.game.getGameEnded(board, 1);
+    return this.game.getGameEnded(boardPiece, 1);
   }
 
 
@@ -71,6 +72,8 @@ export default class Arena {
       //                                                                                            total=bar.elapsed_td, eta=bar.eta_td)
       // bar.next()
     }
+
+    console.log('swap');
 
     const tmpPlayer1 = this.player1;
     this.player1 = this.player2,

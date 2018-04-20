@@ -5,8 +5,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "針對 localhost 啟動 Chrome",
-            // "url": "http://localhost:3000",
-            "url": "http://www.google.com.tw",
+            "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
             "runtimeArgs": [
                 "--auto-open-devtools-for-tabs"

@@ -4,6 +4,7 @@ import { NeuralNet } from '../../NeuralNet';
 
 export class NNetWrapper extends NeuralNet {
   constructor() {
+    super();
     console.log('NNetWrapper constructer');
   }
 
@@ -12,4 +13,3 @@ export class NNetWrapper extends NeuralNet {
 
   }
 }
-

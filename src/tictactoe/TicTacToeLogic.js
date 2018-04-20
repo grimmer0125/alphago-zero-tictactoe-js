@@ -2,7 +2,6 @@ const __directions = [(1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 
 
 export default class Board {
   constructor(n = 3) {
-    console.log('Set up initial board configuration.');
     this.n = n;
     // Create the empty board array.
     // #[None, None, None] = [None] *3
@@ -102,7 +101,7 @@ export default class Board {
     // color gives the color pf the piece to play (1=white,-1=black)
     // """
 
-    const { x, y } = movie;
+    const { x, y } = move;
     // (x,y) = move
     if (this.pieces[x][y] === 0) {
       this.pieces[x][y] = color;

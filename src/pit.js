@@ -1,5 +1,5 @@
 import Arena from './Arena';
-import MCTS from 'MCTS';
+import MCTS from './MCTS';
 
 import { TicTacToeGame, display } from './tictactoe/TicTacToeGame';
 
@@ -10,18 +10,18 @@ import * as players from './tictactoe/TicTacToePlayers';
 // from tictactoe.TicTacToePlayers import *
 
 export default function play() {
-  const g = TicTacToeGame();
-  const rp = players.RandomPlayer(g).play;
-  const rp2 = players.RandomPlayer(g).play;
+  const g = new TicTacToeGame();
+  const rp = new players.RandomPlayer(g);// .play;
+  const rp2 = new players.RandomPlayer(g);// .play;
 
   // hp = HumanTicTacToePlayer(g).play
 
   // nnet players
-  const n1 = NNet(g);
+  const n1 = new NNet(g);
   n1.load_checkpoint('./pretrained_models/tictactoe/keras/', 'best.pth-grimmer2-less.tar');
 
   const args1 = { numMCTSSims: 50, cpuct: 1.0 }; // dotdict({ numMCTSSims:
-  const mcts1 = MCTS(g, n1, args1);
+  const mcts1 = new MCTS(g, n1, args1);
 
   // python ver.: n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
   const n1p = (x) => {
@@ -45,7 +45,7 @@ export default function play() {
   };
 
   // const arena = Arena.Arena(n1p, rp, g, display);
-  const arena = Arena.Arena(rp, rp2, g, display);
-  console.log(arena.playGames(1, true));
+  const arena = new Arena(rp, rp2, g, display);
+  console.log(arena.playGames(2, true));
   console.log('finish');
 }
