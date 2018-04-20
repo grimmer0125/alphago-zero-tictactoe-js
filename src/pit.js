@@ -46,6 +46,6 @@ export default function play() {
 
   // const arena = Arena.Arena(n1p, rp, g, display);
   const arena = new Arena(rp, rp2, g, display);
-  console.log(arena.playGames(2, true));
+  console.log(arena.playGames(10, false));
   console.log('finish');
 }

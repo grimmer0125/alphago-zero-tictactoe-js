@@ -28,23 +28,24 @@ export class TicTacToeGame extends Game {
     return (this.n * this.n) + 1;
   }
 
-  getNextState(board, player, action) {
+  getNextState(boardPiece, player, action) {
     // # if player takes action on board, return next (board,player)
     // # action must be a valid move
     // QUESTION: why this condition, grimmer?
     if (action === this.n * this.n) {
       // return (board, -player)
-      return { board, player: -player };
+      console.log('invalid action');
+      return { boardPiece, player: -player };
     }
 
     // b = Board(self.n)
     // b.pieces = np.copy(board)
     const b = new Board(this.n);
-    b.pieces = board.tolist();
+    b.pieces = boardPiece.tolist();
 
     const move = { x: Math.floor(action / this.n), y: (action % this.n) };
     b.execute_move(move, player);
-    return { board: nj.array(b.pieces), curPlayer: -player };
+    return { boardPiece: nj.array(b.pieces), curPlayer: -player };
   }
 
   // return a list, 會受getCanonicalForm影響嗎? 不會.
@@ -122,15 +123,15 @@ export function display(board) {
   log = '';
   const n = board.shape[0];
   const list = board.tolist();
-  print('   ', '');
+  print('  ', '');
   for (let y = 0; y < n; y++) {
-    print(`${y}`, '');
+    print(`${y}`, ' ');
   }
   // for y in range(n):
   //     print (y,"", end="")
 
   print('');
-  print('  ', '');
+  print(' ', '');
   // for _ in range(n):
   //     print ("-", end="-")
   for (let _ = 0; _ < n; _++) {
@@ -155,7 +156,7 @@ export function display(board) {
     print('|');
   }
 
-  print('  ', '');
+  print(' ', '');
   for (let _ = 0; _ < n; _++) {
     print('-', '-');
   }

@@ -16,8 +16,8 @@ export default class Arena {
       // curPlayer: 1 or -1
       it += 1;
       if (verbose) {
-        console.log(`Turn ${it}. Player ${curPlayer}`);
         this.display(boardPiece);
+        console.log(`Turn ${it}. Player ${curPlayer}`);
       }
       const action = players[curPlayer + 1].play(this.game.getCanonicalForm(boardPiece, curPlayer));
       let valids = this.game.getValidMoves(this.game.getCanonicalForm(boardPiece, curPlayer), 1);
@@ -29,7 +29,7 @@ export default class Arena {
         throw 'can not find out valid action, something wrong';
       }
       const nextState = this.game.getNextState(boardPiece, curPlayer, action);
-      boardPiece = nextState.board;
+      boardPiece = nextState.boardPiece;
       curPlayer = nextState.curPlayer;
     }
 
@@ -81,9 +81,9 @@ export default class Arena {
 
     for (let i = 0; i < num; i++) {
       const gameResult = this.playGame(verbose);
-      if (gameResult == 1) {
+      if (gameResult == -1) {
         oneWon += 1;
-      } else if (gameResult == -1) {
+      } else if (gameResult == 1) {
         twoWon += 1;
       } else {
         draws += 1;

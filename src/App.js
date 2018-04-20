@@ -9,7 +9,6 @@ import play from './pit';
 class App extends Component {
   constructor(props) {
     super(props);
-    console.log('print log');
   }
 
   startTest = () => {
