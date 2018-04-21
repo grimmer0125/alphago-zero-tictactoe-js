@@ -99,8 +99,50 @@ export class TicTacToeGame extends Game {
     return nj.multiply(boardNdArray, player);
   }
 
-  getSymmetries(board, pi) {
+  // e.g. pi:[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
+  getSymmetries(boardNdArray, pi) {
+    if (pi.length !== this.n ** 2 + 1) {
+      throw 'not valid pi for Symmetries';
+    }
 
+    // 3x3 ndarray
+    // pi[:-1] 拿掉最後一個.
+    const pi_copy = pi.slice();
+    pi_copy.pop();
+    const pi_board = nj.reshape(pi_copy, [this.n, this.n]);
+    const l = [];
+
+    for (let i = 1; i < 5; i++) {
+      for (const j of [true, false]) {
+        let newB = nj.rot90(boardNdArray, i);
+        let newPi = nj.rot90(pi_board, i);
+        if (j) {
+          // newB = np.fliplr(newB)
+          newB = nj.flip(newB, 1);
+          newPi = nj.flip(newPi, 1);
+        }
+        // p: ordinary 1d array.
+        //         >>> y2
+        // array([[3, 2, 1],
+        //        [6, 5, 4],
+        //        [9, 8, 7]])
+        // >>> y2.ravel()
+        // array([3, 2, 1, 6, 5, 4, 9, 8, 7])
+        // after list
+        // [3, 2, 1, 6, 5, 4, 9, 8, 7] !!
+        // + [pi[-1] (e.g. [33])
+        // [3, 2, 1, 6, 5, 4, 9, 8, 7, 33]
+        const p = nj.flatten(newPi).tolist();
+        p.push(pi[pi.length - 1]);
+        const element = { b: newB, p };
+        // l += [(newB, )]
+        l.push(element);
+      }
+    }
+
+    return l;
+
+    // np.reshape(pi[:-1], (self.n, self.n))
   }
 
   // used by MCTS

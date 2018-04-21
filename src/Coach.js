@@ -84,7 +84,7 @@ export default class Coach {
 
         for (let i = 0; i < this.args.numEps; i++) {
           this.mcts = new MCTS(this.game, this.nnet, this.args);
-          iterationTrainExamples.push(this.executeEpisode());
+          iterationTrainExamples.concat(this.executeEpisode());
 
           // # bookkeeping + plot progress
           // eps_time.update(time.time() - end)

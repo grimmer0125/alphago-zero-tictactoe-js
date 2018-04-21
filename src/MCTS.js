@@ -82,8 +82,10 @@ export default class MCTS {
 
     if (this.Ps.indexOf(s) == -1) {
       // # leaf node
-      const { Ps, v } = this.nnet.predict(canonicalBoard);
-      this.Ps[s] = Ps;
+      // QUESTION: v為[0.x] , array1x1的ndarray !! u應該也是, qsa
+      const resp = this.nnet.predict(canonicalBoard);
+      this.Ps[s] = resp.Ps;
+      const v = resp.v.get(0);
 
       const valids = this.game.getValidMoves(canonicalBoard, 1);
       // NB: Array multiplication is not matrix multiplication:
@@ -117,11 +119,17 @@ export default class MCTS {
         const saKey = `${s};${a}`;
         let u;
         if (this.Qsa.hasOwnProperty(saKey)) {
-          u = this.Qsa[saKey] + this.args.cpuct * this.Ps[s][a] * Math.sqrt(this.Ns[s]) / (1 + this.Nsa[saKey]);
+          // TODO: check. type: [value], ndrray. case0.
+          // this.Ps的access可以直接[][]嗎? 還有Qsa[]出來的應該是 [0.x],
+          // 可能也要改, 這個直接改一開始的predict result v就好了
+          u = this.Qsa[saKey] + this.args.cpuct * this.Ps.get(s, a) * Math.sqrt(this.Ns[s]) / (1 + this.Nsa[saKey]);
         } else {
-          u = this.args.cpuct * this.Ps[s][a] * Math.sqrt(this.Ns[s] + EPS); //    # Q = 0 ?
+          // TODO: check. type:value
+          u = this.args.cpuct * this.Ps.get(s, a) * Math.sqrt(this.Ns[s] + EPS); //    # Q = 0 ?
         }
 
+        // QUESTION: : 可能會有value 跟 ndarray [x] 的比較需求出現, case1
+        // 以及 -v, -1*numjs的case2, 還有  // case4
         if (u > cur_best) {
           cur_best = u;
           best_act = a;
@@ -129,7 +137,7 @@ export default class MCTS {
       }
     }
 
-    const a = best_act;
+    const a = best_act; // a: value
 
     const nextState = this.game.getNextState(canonicalBoard, 1, a);
     let next_s = nextState.boardNdArray;
@@ -139,7 +147,9 @@ export default class MCTS {
     const v = this.search(next_s);
     const saKey = `${s};${a}`;
     if (this.Qsa.hasOwnProperty(saKey)) {
+      // TODO: check, case4
       this.Qsa[saKey] = (this.Nsa[saKey] * this.Qsa[saKey] + v) / (this.Nsa[saKey] + 1);
+
       this.Nsa[saKey] += 1;
     } else {
       this.Qsa[saKey] = v;
