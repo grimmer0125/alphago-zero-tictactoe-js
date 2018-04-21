@@ -1,4 +1,7 @@
 export default class Arena {
+  // """
+  // An Arena class where any 2 agents can be pit against each other.
+  // """
   constructor(player1, player2, game, display) {
     console.log('Arena constructer');
     this.player1 = player1;
@@ -10,17 +13,17 @@ export default class Arena {
   playGame(verbose = false) {
     const players = [this.player2, null, this.player1];
     let curPlayer = 1;
-    let boardPiece = this.game.getInitBoardPiece();
+    let boardNdArray = this.game.getInitBoardNdArray();
     let it = 0;
-    while (this.game.getGameEnded(boardPiece, curPlayer) === 0) {
+    while (this.game.getGameEnded(boardNdArray, curPlayer) === 0) {
       // curPlayer: 1 or -1
       it += 1;
       if (verbose) {
-        this.display(boardPiece);
+        this.display(boardNdArray);
         console.log(`Turn ${it}. Player ${curPlayer}`);
       }
-      const action = players[curPlayer + 1].play(this.game.getCanonicalForm(boardPiece, curPlayer));
-      let valids = this.game.getValidMoves(this.game.getCanonicalForm(boardPiece, curPlayer), 1);
+      const action = players[curPlayer + 1].play(this.game.getCanonicalForm(boardNdArray, curPlayer));
+      let valids = this.game.getValidMoves(this.game.getCanonicalForm(boardNdArray, curPlayer), 1);
       valids = valids.tolist();
 
       if (valids[action] == 0) {
@@ -28,18 +31,18 @@ export default class Arena {
         // assert valids[action] >0
         throw 'can not find out valid action, something wrong';
       }
-      const nextState = this.game.getNextState(boardPiece, curPlayer, action);
-      boardPiece = nextState.boardPiece;
+      const nextState = this.game.getNextState(boardNdArray, curPlayer, action);
+      boardNdArray = nextState.boardNdArray;
       curPlayer = nextState.curPlayer;
     }
 
     if (verbose) {
-      console.log(`Game over: Turn ${it}. Result ${this.game.getGameEnded(boardPiece, 1)}`);
+      console.log(`Game over: Turn ${it}. Result ${this.game.getGameEnded(boardNdArray, 1)}`);
       // assert(self.display)
-      this.display(boardPiece);
+      this.display(boardNdArray);
     }
 
-    return this.game.getGameEnded(boardPiece, 1);
+    return this.game.getGameEnded(boardNdArray, 1);
   }
 
 

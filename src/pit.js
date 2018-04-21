@@ -1,5 +1,6 @@
 import Arena from './Arena';
 import MCTS from './MCTS';
+import Utils from './Utils';
 
 import { TicTacToeGame, display } from './tictactoe/TicTacToeGame';
 
@@ -26,25 +27,10 @@ export default function play() {
   // python ver.: n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
   const n1p = (x) => {
     const list = mcts1.getActionProb(x, 0);
-    const len = list.length;
-    let maxIndex = -1;
-    let maxValue = null;
-    for (let i = 0; i < len; i++) {
-      const value = list[i];
-      if (i === 0) {
-        maxValue = value;
-      } else if (value > maxValue) {
-        maxValue = value;
-        maxIndex = i;
-      }
-    }
-    if (maxIndex === -1) {
-      throw 'bad prop-list to search max';
-    }
-    return maxIndex;
+    return Utils.argmax(list);
   };
 
-  // const arena = Arena.Arena(n1p, rp, g, display);
+  // const arena = Arena.Arena({play:n1p}, rp, g, display);
   const arena = new Arena(rp, rp2, g, display);
   console.log(arena.playGames(10, false));
   console.log('finish');

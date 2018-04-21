@@ -11,7 +11,7 @@ export class TicTacToeGame extends Game {
     this.n = n;
   }
 
-  getInitBoardPiece() {
+  getInitBoardNdArray() {
     const b = new Board(this.n);
     return nj.array(b.pieces);
     // return np.array(b.pieces)
@@ -28,34 +28,34 @@ export class TicTacToeGame extends Game {
     return (this.n * this.n) + 1;
   }
 
-  getNextState(boardPiece, player, action) {
+  getNextState(boardNdArray, player, action) {
     // # if player takes action on board, return next (board,player)
     // # action must be a valid move
     // QUESTION: why this condition, grimmer?
     if (action === this.n * this.n) {
       // return (board, -player)
       console.log('invalid action');
-      return { boardPiece, player: -player };
+      return { boardNdArray, player: -player };
     }
 
     // b = Board(self.n)
     // b.pieces = np.copy(board)
     const b = new Board(this.n);
-    b.pieces = boardPiece.tolist();
+    b.pieces = boardNdArray.tolist();
 
     const move = { x: Math.floor(action / this.n), y: (action % this.n) };
     b.execute_move(move, player);
-    return { boardPiece: nj.array(b.pieces), curPlayer: -player };
+    return { boardNdArray: nj.array(b.pieces), curPlayer: -player };
   }
 
   // return a list, 會受getCanonicalForm影響嗎? 不會.
-  getValidMoves(board, player) {
+  getValidMoves(boardNdArray, player) {
   // # return a fixed size binary vector
   // valids = [0]*this.getActionSize()
     const valids = Array(this.getActionSize()).fill(0);
     const b = new Board(this.n);
     // b.pieces = np.copy(board)
-    b.pieces = board.tolist();
+    b.pieces = boardNdArray.tolist();
 
     const legalMoves = b.get_legal_moves(player);
     if (legalMoves.length === 0) {
@@ -73,11 +73,11 @@ export class TicTacToeGame extends Game {
     return nj.array(valids);
   }
 
-  getGameEnded(boardPiece, player) {
+  getGameEnded(boardNdArray, player) {
     // # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
     // # player = 1
     const b = new Board(this.n);
-    b.pieces = boardPiece.tolist();
+    b.pieces = boardNdArray.tolist();
 
     if (b.is_win(player)) {
       return 1;
@@ -93,16 +93,20 @@ export class TicTacToeGame extends Game {
   }
 
   // at least not useful for playing. Useful for training (executeEpisode)?
-  getCanonicalForm(board, player) {
+  getCanonicalForm(boardNdArray, player) {
     // # return state if player==1, else return -state if player==-1
     // return player*board
-    return nj.multiply(board, player);
+    return nj.multiply(boardNdArray, player);
+  }
+
+  getSymmetries(board, pi) {
+
   }
 
   // used by MCTS
-  stringRepresentation(board) {
-    // # 8x8 numpy array (canonical board)
-    // return board.tostring()
+  stringRepresentation(boardNdArray) {
+    // # 3x3 numpy array (canonical board)
+    return JSON.stringify(boardNdArray);
   }
 }
 
@@ -119,10 +123,10 @@ function flush() {
   console.log(log);
 }
 
-export function display(board) {
+export function display(boardNdArray) {
   log = '';
-  const n = board.shape[0];
-  const list = board.tolist();
+  const n = boardNdArray.shape[0];
+  const list = boardNdArray.tolist();
   print('  ', '');
   for (let y = 0; y < n; y++) {
     print(`${y}`, ' ');
