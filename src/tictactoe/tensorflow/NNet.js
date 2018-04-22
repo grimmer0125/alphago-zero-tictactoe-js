@@ -8,7 +8,7 @@ import TicTacToeNNet from './TicTacToeNNet';
 const args = {
   lr: 0.001,
   dropout: 0.3,
-  epochs: 10,
+  epochs: 6, // 10,
   batch_size: 64,
   cuda: false,
   num_channels: 512,
