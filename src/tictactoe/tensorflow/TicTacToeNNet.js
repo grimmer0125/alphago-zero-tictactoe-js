@@ -7,6 +7,9 @@ export default class TicTacToeNNet {
     this.board_x = a;
     this.board_y = b;
     this.args = args;
+    // self.board_x, self.board_y = game.getBoardSize()
+    this.action_size = game.getActionSize();
+    // self.args = args
 
     const normalize1 = () => tf.layers.batchNormalization({ axis: 3 });
 
@@ -55,10 +58,15 @@ export default class TicTacToeNNet {
 
     // BatchNormalization(axis=3)? https://keras-cn.readthedocs.io/en/latest/layers/normalization_layer/
     // https://js.tensorflow.org/api/0.9.0/#layers.batchNormalization
-    const h_conv1 = normalize1().apply(normalize1().apply(conv2d_padding()));
-    const h_conv2 = normalize1().apply(normalize1().apply(conv2d_padding()));
-    const h_conv3 = normalize1().apply(normalize1().apply(conv2d_padding()));
-    const h_conv4 = normalize1().apply(normalize1().apply(conv2d_valid()));
+    const h_conv1 = normalize1().apply(normalize1().apply(conv2d_padding().apply(input)));
+
+
+    //   h_conv4.apply(h_conv3.apply(h_conv2.apply((
+    //   h_conv1.apply(input))))))));
+
+    const h_conv2 = normalize1().apply(normalize1().apply(conv2d_padding().apply(h_conv1)));
+    const h_conv3 = normalize1().apply(normalize1().apply(conv2d_padding().apply(h_conv2)));
+    const h_conv4 = normalize1().apply(normalize1().apply(conv2d_valid().apply(h_conv3)));
 
     // const h_conv2 = normalize1.apply(tf.layers.conv2d({
     //   inputShape: [this.board_x, this.board_y, 1],
@@ -95,23 +103,24 @@ export default class TicTacToeNNet {
     // const batchNormalize = tf.layers.batchNormalization({ axis: 3 });
 
 
+    const middle1 = flattenLayer.apply(h_conv4);
+
     // First dense layer uses relu activation.
     // const normalize2 = tf.layers.batchNormalization({ axis: 1 });
-
-    const denseLayer1 = dropout().apply(relu().apply(normalize2().apply(tf.layers.dense({ units: 1024 }))));
-
-    const denseLayer2 = dropout().apply(relu().apply(normalize2().apply(tf.layers.dense({ units: 512 }))));
+    const denseLayer1 = tf.layers.dense({ units: 1024 }).apply(middle1);
+    const middle2 = dropout().apply(relu().apply(normalize2().apply(denseLayer1)));
+    const denseLayer2 = tf.layers.dense({ units: 512 }).apply(middle2);
+    const middle3 = dropout().apply(relu().apply(normalize2().apply(denseLayer2)));
 
     // const denseLayer2 = dropout.apply(normalize2.apply(tf.layers.dense({ units: 512 }))));
 
-    const middle = denseLayer2.apply(denseLayer1.apply(flattenLayer.apply(h_conv4.apply(h_conv3.apply(h_conv2.apply((
-      h_conv1.apply(input))))))));
+    // const middle = denseLayer2.apply(denseLayer1.apply(flattenLayer.apply(h_conv4)));
 
     // Second dense layer uses softmax activation.
     const piLayer = tf.layers.dense({ units: this.action_size, activation: 'softmax' });
-    const output1 = piLayer.apply(middle);
+    const output1 = piLayer.apply(middle3);
     const vLayer = tf.layers.dense({ units: 1, activation: 'tanh' });
-    const output2 = vLayer.apply(middle);
+    const output2 = vLayer.apply(middle3);
 
     // Obtain the output symbolic tensor by applying the layers on the input.
     // const output = batchNormal.apply(denseLayer2.apply(denseLayer1.apply(input)));

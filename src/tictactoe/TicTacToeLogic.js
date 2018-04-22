@@ -100,9 +100,27 @@ export default class Board {
     // """Perform the given move on the board;
     // color gives the color pf the piece to play (1=white,-1=black)
     // """
-
-    const { x, y } = move;
+    // console.log('move:', move);
+    let { x, y } = move;
     // (x,y) = move
+    if (x < 0) {
+      if (x < -1) {
+        // console.log('x position is negtive (not -1)!!');
+        throw 'x position is wrong!!';
+      } else {
+        x = this.pieces.length - 1;
+      }
+    }
+
+    if (y < 0) {
+      if (y < -1) {
+        // console.log('y position is negtive (not -1)!!');
+        throw 'y position is wrong!!';
+      } else {
+        y = this.pieces[0].length - 1;
+      }
+    }
+
     if (this.pieces[x][y] === 0) {
       this.pieces[x][y] = color;
     } else {

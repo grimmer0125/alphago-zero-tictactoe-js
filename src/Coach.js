@@ -70,6 +70,7 @@ export default class Coach {
   // numIters (3) * nnet's epochs (10) * numEps (25)?
   learn() {
     const max = this.args.numIters + 1;
+    console.log(`start learn ${max} times`);
     for (let i = 1; i < max; i++) {
       console.log(`------ITER ${i}------`);
 
@@ -82,7 +83,9 @@ export default class Coach {
         // bar = Bar('Self Play', max=self.args.numEps)
         // end = time.time()
 
+        console.log('start %d eposides', this.args.numEps);
         for (let i = 0; i < this.args.numEps; i++) {
+          console.log('eposides-%d', i);
           this.mcts = new MCTS(this.game, this.nnet, this.args);
           iterationTrainExamples.concat(this.executeEpisode());
 
@@ -142,6 +145,8 @@ export default class Coach {
         // self.nnet.save_checkpoint(folder = self.args.checkpoint, filename = 'best.pth.tar');
       }
     }
+
+    console.log('finish learning');
   }
 
   // return filename

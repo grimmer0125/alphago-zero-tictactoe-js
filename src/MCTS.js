@@ -20,9 +20,12 @@ export default class MCTS {
 
   // return a array-like object
   getActionProb(canonicalBoard, temp = 1) {
+    console.log('getActionProb 1');
     for (let i = 0; i < this.args.numMCTSSims; i++) {
+      // console.log(`MCTS loop:${i}`);
       this.search(canonicalBoard);
     }
+    console.log('getActionProb MCTS loop ends');
     const s = this.game.stringRepresentation(canonicalBoard);
 
     const aSize = this.game.getActionSize();
@@ -47,6 +50,7 @@ export default class MCTS {
     counts = counts.map(x => x ** (1.0 / temp));
     const sum = counts.reduce((x, y) => x + y);
     probs = counts.map(x => x / sum);
+    console.log('getActionProb 2');
     return probs;
   }
 
@@ -71,7 +75,7 @@ export default class MCTS {
   search(canonicalBoard) {
     const s = this.game.stringRepresentation(canonicalBoard);
 
-    if (this.Es.indexOf(s) == -1) {
+    if (this.Es.hasOwnProperty(s) == false) {
       this.Es[s] = this.game.getGameEnded(canonicalBoard, 1);
     }
 
@@ -80,12 +84,12 @@ export default class MCTS {
       return -this.Es[s];
     }
 
-    if (this.Ps.indexOf(s) == -1) {
+    if (this.Ps.hasOwnProperty(s) == false) {
       // # leaf node
       // QUESTION: v為[0.x] , array1x1的ndarray !! u應該也是, qsa
       const resp = this.nnet.predict(canonicalBoard);
       this.Ps[s] = resp.Ps;
-      const v = resp.v.get(0);
+      const v = resp.v;// .get(0);
 
       const valids = this.game.getValidMoves(canonicalBoard, 1);
       // NB: Array multiplication is not matrix multiplication:
@@ -115,17 +119,18 @@ export default class MCTS {
     const aSize = this.game.getActionSize();
     // # pick the action with the highest upper confidence bound
     for (let a = 0; a < aSize; a++) {
-      if (valids[a]) {
+      // NB valid is a ndarray
+      if (valids.get(a) > 0) {
         const saKey = `${s};${a}`;
         let u;
         if (this.Qsa.hasOwnProperty(saKey)) {
           // TODO: check. type: [value], ndrray. case0.
           // this.Ps的access可以直接[][]嗎? 還有Qsa[]出來的應該是 [0.x],
           // 可能也要改, 這個直接改一開始的predict result v就好了
-          u = this.Qsa[saKey] + this.args.cpuct * this.Ps.get(s, a) * Math.sqrt(this.Ns[s]) / (1 + this.Nsa[saKey]);
+          u = this.Qsa[saKey] + this.args.cpuct * this.Ps[s].get(a) * Math.sqrt(this.Ns[s]) / (1 + this.Nsa[saKey]);
         } else {
           // TODO: check. type:value
-          u = this.args.cpuct * this.Ps.get(s, a) * Math.sqrt(this.Ns[s] + EPS); //    # Q = 0 ?
+          u = this.args.cpuct * this.Ps[s].get(a) * Math.sqrt(this.Ns[s] + EPS); //    # Q = 0 ?
         }
 
         // QUESTION: : 可能會有value 跟 ndarray [x] 的比較需求出現, case1

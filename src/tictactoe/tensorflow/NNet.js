@@ -17,7 +17,7 @@ const args = {
 export class NNetWrapper extends NeuralNet {
   constructor(game) {
     super();
-    this.nnet = TicTacToeNNet(game, args);
+    this.nnet = new TicTacToeNNet(game, args);
     const { a, b } = game.getBoardSize();
     this.board_x = a;
     this.board_y = b;
@@ -28,6 +28,7 @@ export class NNetWrapper extends NeuralNet {
   }
 
   async train(examples) {
+    console.log('train -1. epoch size:', args.batch_size);
     const total = examples.length;
 
     const inputData = [];
@@ -89,12 +90,12 @@ export class NNetWrapper extends NeuralNet {
       },
     });
 
-    console.log('after fit');
+    console.log('training-2: after fit');
   }
 
   predict(boardNdArray) {
     // # preparing input
-    console.log('prediction');
+    // console.log('prediction');
 
     // board = board[np.newaxis, :, :]
 
@@ -113,20 +114,22 @@ export class NNetWrapper extends NeuralNet {
     // pi, v = this.nnet.model.predict(board)
     // const c3 = nj.reshape(c, [1, 3, 3]);// ) c.get(0, 2);// + 8;
 
-    const data = prediction.dataSync(); // 這裡變成一維的, 可能是因為[output]會自動變成output吧
+    const data1 = prediction[0].dataSync(); // 這裡變成一維的, 可能是因為[output]會自動變成output吧
 
     // console.log('getPrediction end:', data);
-    const data2 = Array.from(data);
+    const data12 = Array.from(data1);
     // console.log('getPrediction end2:', data2);
-    console.log('data2:', data2);
 
-    // DEBUG:
-    const { pi, v } = data2[0];
+    const data2 = Array.from(prediction[1].dataSync());
+
+    const Ps = data12;// [0,1,2,3];
+    const v = data2[0]; // e.g.[0.1];
 
     // #print('PREDICTION TIME TAKEN : {0:03f}'.format(time.time()-start))
     // return pi[0], v[0], 還是ndarray格式
 
-    return data2;
+    // console.log('tensorflow Ps:', Ps, 'v:', v);
+    return { Ps, v };
   }
 
   // NOTE: low priority
