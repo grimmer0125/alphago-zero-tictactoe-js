@@ -26,6 +26,14 @@ class App extends Component {
     play(1);
   }
 
+  userVSuser = () => {
+
+  }
+
+  twoRandowmPlayWithPretrained = async () => {
+    await play(2);
+  }
+
   render() {
     return (
       <div className="App">
@@ -42,6 +50,9 @@ class App extends Component {
         <button onClick={this.startTrain}>
           Start self-Train
         </button>
+        <button onClick={this.twoRandowmPlayWithPretrained}>
+          Test Pretrained vs Random
+        </button>
         <button onClick={this.selfTrainVSRandom}>
           Self-trained vs Random
         </button>
@@ -50,6 +61,9 @@ class App extends Component {
         </button>
         <button onClick={this.userVSSelfTrain}>
           user VS SelfTrained
+        </button>
+        <button onClick={this.userVSuser}>
+          userVSuser
         </button>
       </div>
     );

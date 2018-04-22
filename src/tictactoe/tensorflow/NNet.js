@@ -8,7 +8,7 @@ import TicTacToeNNet from './TicTacToeNNet';
 const args = {
   lr: 0.001,
   dropout: 0.3,
-  epochs: 6, // 10,
+  epochs: 10,
   batch_size: 64,
   cuda: false,
   num_channels: 512,
@@ -83,7 +83,6 @@ export class NNetWrapper extends NeuralNet {
     try {
       const history = await this.nnet.model.fit(xTrain, [yTrain1, yTrain2], {
         shuffle: true,
-        // verbose: true,
         batchSize: args.batch_size,
         epochs: args.epochs, // params.epochs, //iris, default 40, use epoch as batch
         callbacks: {
@@ -100,6 +99,14 @@ export class NNetWrapper extends NeuralNet {
     console.log('training-2: after fit');
   }
 
+  async loadPretrained(url) {
+    console.log('load model start');
+
+    // 'https://foo.bar/tfjs_artifacts/model.json'
+    this.preTrainedModel = await tf.loadModel(url);
+    console.log('load model ok');
+  }
+
   predict(boardNdArray) {
     // # preparing input
     // console.log('prediction');
@@ -109,16 +116,25 @@ export class NNetWrapper extends NeuralNet {
     try {
       // TODO remove hard code [1,3,3]
       let input = boardNdArray.tolist();//= nj.reshape(boardNdArray, [1, 3, 3]);
-      input = tf.tensor3d([input], [1, 3, 3]); // null;// tf.tensor2d(batchX, [batchX.length, 18]); // 1 set, 18 inputs (neurons)
-      input = input.reshape([1, 3, 3, 1]);
+
       // needs 3d array
 
       // [1 set, x,y, dummy]
       // const x = tf.tensor4d([input], [1, 3, 3, 1]);
       // shape()
+      input = tf.tensor3d([input], [1, 3, 3]);
 
       // # run
-      const prediction = this.nnet.model.predict(input);
+      let prediction;
+      if (this.preTrainedModel) {
+        // NOTE: This is to test loading preTrainedModel
+        // console.log('use pretrained model to predict');
+        prediction = this.preTrainedModel.predict(input);
+      } else {
+        input = input.reshape([1, 3, 3, 1]);
+        prediction = this.nnet.model.predict(input);
+      }
+
       // pi, v = this.nnet.model.predict(board)
       // const c3 = nj.reshape(c, [1, 3, 3]);// ) c.get(0, 2);// + 8;
 

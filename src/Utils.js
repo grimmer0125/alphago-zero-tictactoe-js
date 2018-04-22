@@ -6,6 +6,7 @@ function argmax(list) {
   for (let i = 0; i < len; i++) {
     const value = list[i];
     if (i === 0) {
+      maxIndex = 0;
       maxValue = value;
     } else if (value > maxValue) {
       maxValue = value;

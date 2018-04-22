@@ -14,7 +14,8 @@ import * as players from './tictactoe/TicTacToePlayers';
 // mode
 // 0: two rp
 // 1: self-trained vs rp
-export default function play(mode) {
+// 2: 1 rp vs 1 pretrained
+export default async function play(mode) {
   const g = new TicTacToeGame();
   let firstPlayr = null;
   if (!mode) {
@@ -37,6 +38,24 @@ export default function play(mode) {
     };
     firstPlayr = { play: n1p };
     // const arena = Arena.Arena({play:n1p}, rp2, g, display);
+  } else if (mode === 2) {
+    // const n1 = getGlobalNN;
+
+    const n1 = new NNet(g);
+    // firstPlayr = new players.RandomPlayer(g);
+    await n1.loadPretrained('http://127.0.0.1:8080//model.json');
+
+    const args1 = { numMCTSSims: 50, cpuct: 1.0 }; // dotdict({ numMCTSSims:
+    const mcts1 = new MCTS(g, n1, args1);
+
+    // python ver.: n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
+    const n1p = (x) => {
+      const list = mcts1.getActionProb(x, 0);
+      return Utils.argmax(list);
+    };
+    firstPlayr = { play: n1p };
+
+    console.log('load pretraind to play');
   } else {
     console.log('invalid mode, return');
     // hp = HumanTicTacToePlayer(g).play
@@ -46,6 +65,6 @@ export default function play(mode) {
   const rp2 = new players.RandomPlayer(g);// .play;
 
   const arena = new Arena(firstPlayr, rp2, g, display);
-  console.log(arena.playGames(10, true));
+  console.log(arena.playGames(100, false));
   console.log('finish');
 }

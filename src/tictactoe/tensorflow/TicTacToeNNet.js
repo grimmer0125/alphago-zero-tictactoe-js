@@ -3,6 +3,10 @@ import * as tf from '@tensorflow/tfjs';
 export default class TicTacToeNNet {
   constructor(game, args) {
     console.log('TicTacToeNNet constructer');
+    // console.log('tf.setBackend :cpu');
+    // tf.setBackend('cpu');
+    // console.log('tf.getBackend:', tf.getBackend());
+
     const { a, b } = game.getBoardSize();
     this.board_x = a;
     this.board_y = b;
@@ -132,9 +136,11 @@ export default class TicTacToeNNet {
     this.model.compile({
       optimizer,
       loss: ['categoricalCrossentropy', 'meanSquaredError'],
-
-      // metrics: ['accuracy'], // <- optional
+      metrics: ['accuracy'], // <- optional
     });
+    console.log('model:', this.model);
+    console.log(JSON.stringify(this.model));
+
 
   // const LEARNING_RATE = 0.15;
   // const optimizer = tf.train.sgd(LEARNING_RATE);
