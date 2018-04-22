@@ -68,16 +68,16 @@ export default class Coach {
   // only if it wins >= updateThreshold fraction of games.
   // """
   // numIters (3) * nnet's epochs (10) * numEps (25)?
-  learn() {
+  async learn() {
     const max = this.args.numIters + 1;
-    console.log(`start learn ${max} times`);
+    console.log(`start learn ${this.args.numIters} times iteration-MTCS+train`);
     for (let i = 1; i < max; i++) {
       console.log(`------ITER ${i}------`);
 
       if (!this.skipFirstSelfPlay || i > 1) {
         // TODO: Python version uses deque's maxlen,
         // find a way to do it
-        const iterationTrainExamples = [];
+        let iterationTrainExamples = [];
 
         // eps_time = AverageMeter()
         // bar = Bar('Self Play', max=self.args.numEps)
@@ -87,7 +87,8 @@ export default class Coach {
         for (let i = 0; i < this.args.numEps; i++) {
           console.log('eposides-%d', i);
           this.mcts = new MCTS(this.game, this.nnet, this.args);
-          iterationTrainExamples.concat(this.executeEpisode());
+          const episodeResult = this.executeEpisode();
+          iterationTrainExamples = iterationTrainExamples.concat(episodeResult);
 
           // # bookkeeping + plot progress
           // eps_time.update(time.time() - end)
@@ -99,6 +100,8 @@ export default class Coach {
         // bar.finish()
         this.trainExamplesHistory.push(iterationTrainExamples);
       }
+
+      console.log('get this time iteration MTCS data, prepare training');
 
       if (this.trainExamplesHistory.length > this.args.numItersForTrainExamplesHistory) {
         console.log(`len(trainExamplesHistory) =${this.trainExamplesHistory.length} => remove the oldest trainExamples`);
@@ -124,7 +127,8 @@ export default class Coach {
       const pmcts = new MCTS(this.game, this.pnet, this.args);
 
       const flattenExamples = [].concat.apply([], this.trainExamplesHistory);
-      this.nnet.train(flattenExamples);
+      await this.nnet.train(flattenExamples);
+      console.log('after training 1 time');
       const nmcts = new MCTS(this.game, this.nnet, this.args);
       console.log('PITTING AGAINST PREVIOUS VERSION');
       const arena = new Arena(

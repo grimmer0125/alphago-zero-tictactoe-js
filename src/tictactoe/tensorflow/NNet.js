@@ -29,6 +29,7 @@ export class NNetWrapper extends NeuralNet {
 
   async train(examples) {
     console.log('train -1. epoch size:', args.batch_size);
+    console.log('examples:', examples);
     const total = examples.length;
 
     const inputData = [];
@@ -36,13 +37,13 @@ export class NNetWrapper extends NeuralNet {
     const vsData = [];
 
     for (let i = 0; i < total; i++) {
-      const example = example[i];
+      const example = examples[i];
       const { input_boards, target_pis, target_vs } = example;
       const input_boards2 = input_boards.tolist(); // 3x3 numjs(numpy ndarray like)
       inputData.push(input_boards2);
       pisData.push(target_pis);
       vsData.push(target_vs);
-      console.log('pisData item size:', target_pis.length);
+      // console.log('pisData item size:', target_pis.length);
     }
 
     let xTrain = tf.tensor3d(inputData, [total, 3, 3]); // null;// tf.tensor2d(batchX, [batchX.length, 18]); // 1 set, 18 inputs (neurons)
@@ -50,7 +51,7 @@ export class NNetWrapper extends NeuralNet {
 
     const yTrain1 = tf.tensor2d(pisData);// , [total, 10]);
     const yTrain2 = tf.tensor2d(vsData, [total, 1]); // 784
-
+    console.log('start train2');
     // tensorflow.js的mnist是
     // data -> tensorflow format, batch * 784, 用tesnorflow2d
     // batch.xs.reshape([BATCH_SIZE, 28, 28, 1])
@@ -79,16 +80,22 @@ export class NNetWrapper extends NeuralNet {
     // const yTrain1 = tf.tensor2d(batchY, [batchY.length, 10]); // 784x10
     // const yTrain2 = tf.tensor2d(batchY, [batchY.length, 1]); // 784
     // batch.xs.reshape([BATCH_SIZE, 28, 28, 1]
-    const history = await this.nnet.model.fit(xTrain, [yTrain1, yTrain2], {
-      shuffle: true,
-      batchSize: args.batch_size,
-      epochs: args.epochs, // params.epochs, //iris, default 40, use epoch as batch
-      callbacks: {
-        onEpochEnd: (epoch, logs) => {
-          console.log('onEpochEnd');
+    try {
+      const history = await this.nnet.model.fit(xTrain, [yTrain1, yTrain2], {
+        shuffle: true,
+        // verbose: true,
+        batchSize: args.batch_size,
+        epochs: args.epochs, // params.epochs, //iris, default 40, use epoch as batch
+        callbacks: {
+          onEpochEnd: (epoch, logs) => {
+            console.log('onEpochEnd');
+          },
         },
-      },
-    });
+      });
+    } catch (err) {
+      console.log('train error:', err);
+    }
+
 
     console.log('training-2: after fit');
   }
@@ -99,37 +106,44 @@ export class NNetWrapper extends NeuralNet {
 
     // board = board[np.newaxis, :, :]
 
-    // TODO remove hard code [1,3,3]
-    let input = boardNdArray.tolist();//= nj.reshape(boardNdArray, [1, 3, 3]);
-    input = tf.tensor3d([input], [1, 3, 3]); // null;// tf.tensor2d(batchX, [batchX.length, 18]); // 1 set, 18 inputs (neurons)
-    input = input.reshape([1, 3, 3, 1]);
-    // needs 3d array
+    try {
+      // TODO remove hard code [1,3,3]
+      let input = boardNdArray.tolist();//= nj.reshape(boardNdArray, [1, 3, 3]);
+      input = tf.tensor3d([input], [1, 3, 3]); // null;// tf.tensor2d(batchX, [batchX.length, 18]); // 1 set, 18 inputs (neurons)
+      input = input.reshape([1, 3, 3, 1]);
+      // needs 3d array
 
-    // [1 set, x,y, dummy]
-    // const x = tf.tensor4d([input], [1, 3, 3, 1]);
-    // shape()
+      // [1 set, x,y, dummy]
+      // const x = tf.tensor4d([input], [1, 3, 3, 1]);
+      // shape()
 
-    // # run
-    const prediction = this.nnet.model.predict(input);
-    // pi, v = this.nnet.model.predict(board)
-    // const c3 = nj.reshape(c, [1, 3, 3]);// ) c.get(0, 2);// + 8;
+      // # run
+      const prediction = this.nnet.model.predict(input);
+      // pi, v = this.nnet.model.predict(board)
+      // const c3 = nj.reshape(c, [1, 3, 3]);// ) c.get(0, 2);// + 8;
 
-    const data1 = prediction[0].dataSync(); // 這裡變成一維的, 可能是因為[output]會自動變成output吧
+      const data1 = prediction[0].dataSync(); // 這裡變成一維的, 可能是因為[output]會自動變成output吧
 
-    // console.log('getPrediction end:', data);
-    const data12 = Array.from(data1);
-    // console.log('getPrediction end2:', data2);
+      // console.log('getPrediction end:', data);
+      const data12 = Array.from(data1);
+      // console.log('getPrediction end2:', data2);
 
-    const data2 = Array.from(prediction[1].dataSync());
+      const data2 = Array.from(prediction[1].dataSync());
 
-    const Ps = data12;// [0,1,2,3];
-    const v = data2[0]; // e.g.[0.1];
+      const Ps = data12;// [0,1,2,3];
+      const v = data2[0]; // e.g.[0.1];
 
-    // #print('PREDICTION TIME TAKEN : {0:03f}'.format(time.time()-start))
-    // return pi[0], v[0], 還是ndarray格式
+      // #print('PREDICTION TIME TAKEN : {0:03f}'.format(time.time()-start))
+      // return pi[0], v[0], 還是ndarray格式
 
-    // console.log('tensorflow Ps:', Ps, 'v:', v);
-    return { Ps, v };
+      // console.log('tensorflow Ps:', Ps, 'v:', v);
+      prediction[0].dispose();
+      prediction[1].dispose();
+      input.dispose();
+      return { Ps, v };
+    } catch (err) {
+      console.log('prediction error:', err);
+    }
   }
 
   // NOTE: low priority
