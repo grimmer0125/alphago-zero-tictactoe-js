@@ -105,7 +105,7 @@ export class TicTacToeGame extends Game {
       throw 'not valid pi for Symmetries';
     }
 
-    // 3x3 ndarray
+    // boardNdArray 3x3 ndarray
     // pi[:-1] 拿掉最後一個.
     const pi_copy = pi.slice();
     pi_copy.pop();

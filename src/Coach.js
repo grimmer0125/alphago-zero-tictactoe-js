@@ -112,7 +112,7 @@ export default class Coach {
       //     trainExamples.extend(e)
       // shuffle(trainExamples)
       // NOTE: Use tensorflow.js' built-in shuffle parameter of model fit method
-      const trainExamples = this.trainExamplesHistory;
+      // const trainExamples = this.trainExamplesHistory;
 
       // # training new network, keeping a copy of the old one
       // self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
@@ -120,12 +120,13 @@ export default class Coach {
       this.pnet = deepcopy(this.nnet);
       const pmcts = new MCTS(this.game, this.pnet, this.args);
 
-      this.nnet.train(trainExamples);
+      const flattenExamples = [].concat.apply([], this.trainExamplesHistory);
+      this.nnet.train(flattenExamples);
       const nmcts = new MCTS(this.game, this.nnet, this.args);
       console.log('PITTING AGAINST PREVIOUS VERSION');
       const arena = new Arena(
-        { play: x => Utils.argmax(pmcts.getActionProb(x, temp = 0)) },
-        { play: x => Utils.argmax(nmcts.getActionProb(x, temp = 0)) },
+        { play: x => Utils.argmax(pmcts.getActionProb(x, 0)) },
+        { play: x => Utils.argmax(nmcts.getActionProb(x, 0)) },
         this.game,
       );
       const { pwins, nwins, draws } = arena.playGames(this.args.arenaCompare);

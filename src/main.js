@@ -19,9 +19,17 @@ const args = {
 
 };
 
-export function train() {
+let globalNN = null;
+
+export function getGlobalNN() {
+  return globalNN;
+}
+
+export default function train() {
   const g = new TicTacToeGame();
   const nnet = new NNet(g);
+
+  globalNN = nnet;
 
   // TODO: low priority
   // if args.load_model:
