@@ -43,7 +43,7 @@ export default async function play(mode) {
 
     const n1 = new NNet(g);
     // firstPlayr = new players.RandomPlayer(g);
-    await n1.loadPretrained('http://127.0.0.1:8080//model.json');
+    await n1.loadPretrained('https://grimmer.io/alphago-tictactoe-keras-trained/model.json');
 
     const args1 = { numMCTSSims: 50, cpuct: 1.0 }; // dotdict({ numMCTSSims:
     const mcts1 = new MCTS(g, n1, args1);
@@ -65,6 +65,6 @@ export default async function play(mode) {
   const rp2 = new players.RandomPlayer(g);// .play;
 
   const arena = new Arena(firstPlayr, rp2, g, display);
-  console.log(arena.playGames(100, false));
+  console.log(arena.playGames(10, false));
   console.log('finish');
 }
