@@ -26,3 +26,5 @@ by using Python.
 
 1. Fix bugs to train models by this JavaScript version project. It may be a TensorFlow.js bug. Maybe waitting for native TensorFlow Node.js binding is better than WebGL solution.
 2. Add UI. 
+3. Clean up. 
+
