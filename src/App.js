@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './App.css';
 import { Checkbox, Button } from 'semantic-ui-react';
 
-import play, { downloadPretrained } from './pit';
+import play, { downloadPretrained, humanMove } from './pit';
 import train from './main';
 // import train from './tictactoe/tensorflow/TicTacToeNNet';
 
@@ -47,6 +47,24 @@ class App extends Component {
 
   toggleAI = () => {
     this.setState({ enabledAI: !this.state.enabledAI });
+  }
+
+  handleClick = action => humanMove(action)
+
+  startNewGame = () => {
+    console.log('start new game');
+    if (this.state.enabledAI) {
+      if (this.state.aiIsDownloaded === false) {
+        alert('ai is not download yer');
+      }
+
+      const action = play(3);
+      if (action >= 0) {
+        console.log('ai starts at:', action);
+        return action;
+      }
+    }
+    return -1;
   }
 
   render() {
@@ -117,7 +135,10 @@ class App extends Component {
           </div>
 
           <div>
-            <TicTacToeApp />
+            <TicTacToeApp
+              handleClick={this.handleClick}
+              startNewGame={this.startNewGame}
+            />
           </div>
 
           {/* <div>
@@ -191,7 +212,7 @@ class TicTacToeApp extends React.Component {
     };
   }
 
-  handleClick(i) {
+  handleClick(i, human) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -208,6 +229,21 @@ class TicTacToeApp extends React.Component {
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
+
+    if (human && this.props.handleClick) {
+      // const action = this.props.handleClick(i);
+      // if (action >= 0) {
+      setTimeout(() => {
+        const action = this.props.handleClick(i);
+        if (action >= 0) {
+          console.log('ai move:', action);
+          this.handleClick(action);
+        }
+      }, 50);
+
+
+      // this.handleClick(action);
+    }
   }
 
   jumpTo(step) {
@@ -215,6 +251,22 @@ class TicTacToeApp extends React.Component {
       stepNumber: step,
       xIsNext: (step % 2) === 0,
     });
+
+    if (this.props.startNewGame) {
+      // TODO: this is anti-parttern (directly get the result)
+      // const action = this.props.startNewGame();
+      // if (action >= 0) {
+      //   console.log('ai moves !!!!');
+      //   // AI move
+      setTimeout(() => {
+        const action = this.props.startNewGame();
+        if (action >= 0) {
+          console.log('ai moves !!!!');
+          this.handleClick(action);
+        }
+        this.handleClick(action);
+      }, 50);
+    }
   }
 
   render() {
@@ -223,9 +275,12 @@ class TicTacToeApp extends React.Component {
     const winner = calculateWinner(current.squares);
 
     const moves = history.map((step, move) => {
+      if (move !== 0) {
+        return null;
+      }
       const desc = move ?
         `Go to move #${move}` :
-        'Go to game start';
+        'Start new game';
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
@@ -245,7 +300,7 @@ class TicTacToeApp extends React.Component {
         <div className="game-board">
           <TicTacToeBoard
             squares={current.squares}
-            onClick={i => this.handleClick(i)}
+            onClick={i => this.handleClick(i, 1)}
           />
         </div>
         <div className="game-info">

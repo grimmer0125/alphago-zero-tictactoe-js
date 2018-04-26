@@ -16,7 +16,7 @@ export default class Arena {
     this.boardNdArray = null;
   }
 
-  gamveMoveByAction(action) {
+  gameMoveByAction(action) {
     let valids = this.game.getValidMoves(this.game.getCanonicalForm(this.boardNdArray, this.curPlayer), 1);
     valids = valids.tolist();
     if (valids[action] == 0) {
@@ -34,9 +34,10 @@ export default class Arena {
     console.log('humanStep');
     console.log(`current Player: ${this.curPlayer}`);
 
+    let aiAction = -1;
     if (!this.players[this.curPlayer + 1].isHuman) {
       console.log('current player is ai, ignore');
-      return;
+      return aiAction;
     }
 
     // 上一個ai造成的ended?
@@ -52,10 +53,10 @@ export default class Arena {
     // 就算最後一子還是要call吧.state要變化好
 
     // 1. human's step.
-    this.gamveMoveByAction(action);
+    this.gameMoveByAction(action);
 
     // 2. auto ai
-    this.tryToPlayAIStep();
+    aiAction = this.tryToPlayAIStep();
 
     if (this.game.getGameEnded(this.boardNdArray, this.curPlayer) !== 0) {
       // game is ended
@@ -66,10 +67,10 @@ export default class Arena {
       // }
 
       // means it is ended
-      return this.game.getGameEnded(this.boardNdArray, this.curPlayer);
+      // return this.game.getGameEnded(this.boardNdArray, this.curPlayer);
     }
 
-    return 0;
+    return aiAction;
 
     // return this.game.getGameEnded(boardNdArray, 1);
   }
@@ -83,6 +84,7 @@ export default class Arena {
   }
 
   tryToPlayAIStep() {
+    let action = -1;
     console.log('tryToPlayAIStep');
     if (!this.players[this.curPlayer + 1].isHuman) {
       // it is an AI
@@ -96,8 +98,8 @@ export default class Arena {
         console.log(`Player ${this.curPlayer}`);
         // }
 
-        const action = this.players[this.curPlayer + 1].play(this.game.getCanonicalForm(this.boardNdArray, this.curPlayer));
-        this.gamveMoveByAction(action);
+        action = this.players[this.curPlayer + 1].play(this.game.getCanonicalForm(this.boardNdArray, this.curPlayer));
+        this.gameMoveByAction(action);
 
         // let valids = this.game.getValidMoves(this.game.getCanonicalForm(this.boardNdArray, this.curPlayer), 1);
         // valids = valids.tolist();
@@ -116,6 +118,8 @@ export default class Arena {
     } else {
       console.log('current player is human, ignore');
     }
+
+    return action;
   }
 
   // TODO: 1.可以由ui寫要不要自動restart的logic, 2. call swap function 也是
@@ -126,7 +130,7 @@ export default class Arena {
     this.boardNdArray = this.game.getInitBoardNdArray(); // !!!
 
     // first player (player1) may be human or AI
-    this.tryToPlayAIStep();
+    return this.tryToPlayAIStep();
   }
 
   playGame(verbose = false) {

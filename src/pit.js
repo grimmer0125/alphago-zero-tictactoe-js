@@ -14,6 +14,7 @@ import * as players from './tictactoe/TicTacToePlayers';
 // TicTacToeGame reference
 let humanGame = null;
 let preTrainedModel = null;
+let humanArena = null;
 
 export async function downloadPretrained() {
   if (!preTrainedModel) {
@@ -26,6 +27,14 @@ export async function downloadPretrained() {
   }
 }
 
+export function humanMove(action) {
+  if (humanArena) {
+    return humanArena.humanStep(action);
+  }
+
+  return -1;
+}
+
 /**
  * play a game or games
  * mode:
@@ -34,7 +43,7 @@ export async function downloadPretrained() {
  *  2: 1 pretrained vs rp
  *  3: 1 pretrained vs human
  */
-export default async function play(mode) {
+export default function play(mode) {
   let g = new TicTacToeGame();
   let firstPlayr = null;
   if (!mode) {
@@ -60,9 +69,13 @@ export default async function play(mode) {
   } else if (mode === 2 || mode === 3) {
     // const n1 = getGlobalNN;
 
-    if (mode === 3) {
-      g = humanGame;
+    if (!preTrainedModel) {
+      console.log('no preTrainedModel, return');
+      return;
     }
+    // if (mode === 3) {
+    g = humanGame;
+    // }
 
     const args1 = { numMCTSSims: 50, cpuct: 1.0 }; // dotdict({ numMCTSSims:
     const mcts1 = new MCTS(g, preTrainedModel, args1);
@@ -77,16 +90,11 @@ export default async function play(mode) {
     console.log('load pretraind to play');
 
     if (mode === 3) {
-      if (!preTrainedModel) {
-        console.log('no preTrainedModel');
-        return;
-      }
+      const hp = new players.HumanTicTacToePlayer(g);// .play
+      humanArena = new Arena(firstPlayr, hp, g, display);
+      const action = humanArena.playNewGameWithHuman();
 
-      const hp = players.HumanTicTacToePlayer(g);// .play
-      const arena = new Arena(firstPlayr, hp, g, display);
-      arena.playNewGameWithHuman();
-
-      return;
+      return action;
     }
   } else {
     console.log('invalid mode, return');
