@@ -2,7 +2,7 @@
   "name": "alpha-zero-tictactoe-js",
   "version": "0.1.0",
   "private": true,
-  "homepage" : "https://grimmer0125.github.io/alphago-zero-tictactoe-js",
+  "homepage": "https://grimmer0125.github.io/alphago-zero-tictactoe-js",
   "dependencies": {
     "@tensorflow/tfjs": "^0.9.1",
     "deepcopy": "^0.6.3",
@@ -16,7 +16,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
@@ -24,6 +26,7 @@
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.7.0"
+    "eslint-plugin-react": "^7.7.0",
+    "gh-pages": "^1.1.0"
   }
 }
