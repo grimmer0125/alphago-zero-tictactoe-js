@@ -4,7 +4,7 @@ import { NNetWrapper as NNet } from './tictactoe/tensorflow/NNet';
 
 const args = {
   numIters: 3,
-  numEps: 10, // 25
+  numEps: 25,
   tempThreshold: 15,
   updateThreshold: 0.6,
   maxlenOfQueue: 200000,
@@ -21,7 +21,7 @@ const args = {
 
 let globalNN = null;
 
-export function getGlobalNN() {
+export function getTrainedNN() {
   return globalNN;
 }
 

@@ -2,12 +2,131 @@ export default class Arena {
   // """
   // An Arena class where any 2 agents can be pit against each other.
   // """
+  //
   constructor(player1, player2, game, display) {
     console.log('Arena constructer');
     this.player1 = player1;
     this.player2 = player2;
     this.game = game;
     this.display = display;
+
+    // Grimmer. used for pretrained-ai vs human
+    this.players = null;
+    this.curPlayer = 0; // 0:dummy. real values: 1 or -1
+    this.boardNdArray = null;
+  }
+
+  gamveMoveByAction(action) {
+    let valids = this.game.getValidMoves(this.game.getCanonicalForm(this.boardNdArray, this.curPlayer), 1);
+    valids = valids.tolist();
+    if (valids[action] == 0) {
+      console.log(action);
+      // assert valids[action] >0
+      throw 'can not find out valid action, something wrong';
+    }
+    const nextState = this.game.getNextState(this.boardNdArray, this.curPlayer, action);
+    this.boardNdArray = nextState.boardNdArray;
+    this.curPlayer = nextState.curPlayer;
+  }
+
+  // a: board index from 0 to 8
+  humanStep(action) {
+    console.log('humanStep');
+    console.log(`current Player: ${this.curPlayer}`);
+
+    if (!this.players[this.curPlayer + 1].isHuman) {
+      console.log('current player is ai, ignore');
+      return;
+    }
+
+    // 上一個ai造成的ended?
+    if (this.game.getGameEnded(this.boardNdArray, this.curPlayer) !== 0) {
+      // game is ended
+      console.log('should not happen, game is ended already');
+    }
+
+    // if (verbose) {
+    this.display(this.boardNdArray);
+    // }
+
+    // 就算最後一子還是要call吧.state要變化好
+
+    // 1. human's step.
+    this.gamveMoveByAction(action);
+
+    // 2. auto ai
+    this.tryToPlayAIStep();
+
+    if (this.game.getGameEnded(this.boardNdArray, this.curPlayer) !== 0) {
+      // game is ended
+      // if (verbose) {
+      // console.log(`Game is ended: Turn ${it}. Result ${this.game.getGameEnded(this.boardNdArray, 1)}`);
+      // assert(self.display)
+      this.display(this.boardNdArray);
+      // }
+
+      // means it is ended
+      return this.game.getGameEnded(this.boardNdArray, this.curPlayer);
+    }
+
+    return 0;
+
+    // return this.game.getGameEnded(boardNdArray, 1);
+  }
+
+  // it will affect who is the first player of a new game
+  swapTwoPlayers() {
+    console.log('swap');
+    const tmpPlayer1 = this.player1;
+    this.player1 = this.player2,
+    this.player2 = tmpPlayer1;
+  }
+
+  tryToPlayAIStep() {
+    console.log('tryToPlayAIStep');
+    if (!this.players[this.curPlayer + 1].isHuman) {
+      // it is an AI
+
+      // let it = 0;
+      if (this.game.getGameEnded(this.boardNdArray, this.curPlayer) === 0) {
+        // curPlayer: 1 (this.player1) or -1 (this.player2)
+        // it += 1;
+        // if (verbose) {
+        this.display(this.boardNdArray);
+        console.log(`Player ${this.curPlayer}`);
+        // }
+
+        const action = this.players[this.curPlayer + 1].play(this.game.getCanonicalForm(this.boardNdArray, this.curPlayer));
+        this.gamveMoveByAction(action);
+
+        // let valids = this.game.getValidMoves(this.game.getCanonicalForm(this.boardNdArray, this.curPlayer), 1);
+        // valids = valids.tolist();
+        //
+        // if (valids[action] == 0) {
+        //   console.log(action);
+        //   // assert valids[action] >0
+        //   throw 'can not find out valid action, something wrong';
+        // }
+        // const nextState = this.game.getNextState(this.boardNdArray, this.curPlayer, action);
+        // this.boardNdArray = nextState.boardNdArray;
+        // this.curPlayer = nextState.curPlayer;
+      } else {
+        console.log('game is already ended');
+      }
+    } else {
+      console.log('current player is human, ignore');
+    }
+  }
+
+  // TODO: 1.可以由ui寫要不要自動restart的logic, 2. call swap function 也是
+  // 3. handle the case to give up+restart game. this.game needs reset
+  playNewGameWithHuman() {
+    this.players = [this.player2, null, this.player1];
+    this.curPlayer = 1;
+    this.boardNdArray = this.game.getInitBoardNdArray(); // !!!
+
+    // first player (player1) may be human or AI
+    this.tryToPlayAIStep();
   }
 
   playGame(verbose = false) {
@@ -76,11 +195,11 @@ export default class Arena {
       // bar.next()
     }
 
-    console.log('swap');
-
-    const tmpPlayer1 = this.player1;
-    this.player1 = this.player2,
-    this.player2 = tmpPlayer1;
+    this.swapTwoPlayers();
+    // console.log('swap');
+    // const tmpPlayer1 = this.player1;
+    // this.player1 = this.player2,
+    // this.player2 = tmpPlayer1;
 
     for (let i = 0; i < num; i++) {
       const gameResult = this.playGame(verbose);

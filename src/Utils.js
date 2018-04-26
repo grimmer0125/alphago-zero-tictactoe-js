@@ -1,5 +1,12 @@
+/**
+ * [argmax description]
+ * @param  {[type]} list [description]
+ * @return {[type]}      [description]
+ */
 function argmax(list) {
   // const list = mcts1.getActionProb(x, 0);
+  //
+
   const len = list.length;
   let maxIndex = -1;
   let maxValue = null;

@@ -22,9 +22,10 @@ export class HumanTicTacToePlayer {
   constructor(game) {
     console.log('HumanTicTacToePlayer constructer');
     this.game = game;
+    this.isHuman = true;
   }
 
-  play= (board) => {
+  play = (board) => {
 
   }
 }

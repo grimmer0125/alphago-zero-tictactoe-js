@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
 import './App.css';
-import { Checkbox } from 'semantic-ui-react';
+import { Checkbox, Button } from 'semantic-ui-react';
 
-import play from './pit';
+import play, { downloadPretrained } from './pit';
 import train from './main';
 // import train from './tictactoe/tensorflow/TicTacToeNNet';
 
@@ -11,7 +11,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      inUIPage: false,
+      enabledAI: false,
+      aiIsDownloaded: false,
     };
   }
 
@@ -35,6 +36,19 @@ class App extends Component {
     await play(2);
   }
 
+  downloadPretrained = async () => {
+    if (this.state.aiIsDownloaded === false) {
+      console.log('ui start to download');
+      await downloadPretrained();
+      console.log('ui start to download2');
+      this.setState({ aiIsDownloaded: true });
+    }
+  }
+
+  toggleAI = () => {
+    this.setState({ enabledAI: !this.state.enabledAI });
+  }
+
   render() {
     return (
       <div className="App" style={{ display: 'flex', justifyContent: 'center' }}>
@@ -42,20 +56,25 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header> */}
-
         <div>
-          <p className="App-intro">
-            <code>No UI</code> refers to use Console to debug or see the results.
-          </p>
           <div>
-            <button onClick={this.twoRandowmPlay}>
-              No UI. Two random Play
-            </button>
+            AlphaGo Zero TicTacToe Game, using TensorFlow.js
           </div>
           <div>
-            <button onClick={this.startTrain}>
-              No UI. Start self-Train.
-            </button>
+            Development only part:
+          </div>
+          {/* <p className="App-intro">
+            <code>No UI</code> refers to use Console to debug or see the results.
+          </p> */}
+          <div style={{ margin: 10 }}>
+            <Button onClick={this.twoRandowmPlay}>
+              Start two random players games (console result)
+            </Button>
+          </div>
+          <div style={{ margin: 10 }}>
+            <Button onClick={this.startTrain}>
+              Start self-Train (console result), a pending issue.
+            </Button>
           </div>
           {/* <div>
             <button onClick={this.selfTrainVSRandom}>
@@ -68,19 +87,34 @@ class App extends Component {
             </button>
           </div> */}
 
-          <div>
-            <button onClick={this.twoRandowmPlayWithPretrained}>
-              No UI. Test Pretrained vs Random
-            </button>
+          <div style={{ margin: 10 }}>
+            <Button onClick={this.twoRandowmPlayWithPretrained}>
+              Start Pretrained vs Random games (console result)
+            </Button>
           </div>
           <hr />
+          <div>
+            Users part:
+          </div>
           {/* <div>
             <button onClick={this.userVSPretrained}>
               User VS Pretrained AlphaGo AI, show TicTacToe UI to play
             </button>
           </div> */}
-          User1 vs User2
-          <Checkbox label="Apply Pretrained AlphaGo AI for User2" />
+          <div>
+            {'Player1 vs Player2 '}
+            <Checkbox
+              label="Apply downloaded AI for Player1"
+              onChange={this.toggleAI}
+              checked={this.state.enabledAI}
+            />
+          </div>
+          <div>
+            {!this.state.aiIsDownloaded ?
+              <Button onClick={this.downloadPretrained}>
+                {'Download 32MB Pretrained Model (from Python+Keras)'}
+              </Button> : null}
+          </div>
 
           <div>
             <TicTacToeApp />
@@ -106,6 +140,10 @@ function Square(props) {
   );
 }
 
+/**
+ * from https://codepen.io/gaearon/pen/gWWZgR
+ * @extends React
+ */
 class TicTacToeBoard extends React.Component {
   renderSquare(i) {
     return (
