@@ -13,6 +13,7 @@ class App extends Component {
     this.state = {
       enabledAI: false,
       aiIsDownloaded: false,
+      aiFirst: true,
     };
   }
 
@@ -58,7 +59,10 @@ class App extends Component {
         alert('ai is not download yer');
       }
 
-      const action = play(3);
+      const action = play(3, this.state.aiFirst);
+
+      this.setState((prevState, props) => ({ aiFirst: !prevState.aiFirst }));
+
       if (action >= 0) {
         console.log('ai starts at:', action);
         return action;
@@ -91,7 +95,7 @@ class App extends Component {
           </div>
           <div style={{ margin: 10 }}>
             <Button onClick={this.startTrain}>
-              Start self-Train (console result), a pending issue.
+              Start self-Train (console result)
             </Button>
           </div>
           {/* <div>
@@ -112,7 +116,7 @@ class App extends Component {
           </div>
           <hr />
           <div>
-            Users part:
+            Users part: 1. download 2. enable AI 3. click start
           </div>
           {/* <div>
             <button onClick={this.userVSPretrained}>
@@ -120,9 +124,9 @@ class App extends Component {
             </button>
           </div> */}
           <div>
-            {'Player1 vs Player2 '}
+            {'Player vs Player '}
             <Checkbox
-              label="Apply downloaded AI for Player1"
+              label="Enable downloaded AI for one Player"
               onChange={this.toggleAI}
               checked={this.state.enabledAI}
             />
@@ -264,7 +268,6 @@ class TicTacToeApp extends React.Component {
           console.log('ai moves !!!!');
           this.handleClick(action);
         }
-        this.handleClick(action);
       }, 50);
     }
   }

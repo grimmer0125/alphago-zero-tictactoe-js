@@ -43,7 +43,7 @@ export function humanMove(action) {
  *  2: 1 pretrained vs rp
  *  3: 1 pretrained vs human
  */
-export default function play(mode) {
+export default function play(mode, aiFirst) {
   let g = new TicTacToeGame();
   let firstPlayr = null;
   if (!mode) {
@@ -91,7 +91,11 @@ export default function play(mode) {
 
     if (mode === 3) {
       const hp = new players.HumanTicTacToePlayer(g);// .play
-      humanArena = new Arena(firstPlayr, hp, g, display);
+      if (aiFirst) {
+        humanArena = new Arena(firstPlayr, hp, g, display);
+      } else {
+        humanArena = new Arena(hp, firstPlayr, g, display);
+      }
       const action = humanArena.playNewGameWithHuman();
 
       return action;
