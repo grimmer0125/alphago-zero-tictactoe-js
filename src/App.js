@@ -116,7 +116,7 @@ class App extends Component {
           </div>
           <hr />
           <div>
-            Users part: 1. download 2. enable AI 3. click start
+            Users part: 1. download 2. enable AI 3. click start (AI may take a while to think)
           </div>
           {/* <div>
             <button onClick={this.userVSPretrained}>
