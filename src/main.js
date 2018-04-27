@@ -4,7 +4,7 @@ import { NNetWrapper as NNet } from './tictactoe/tensorflow/NNet';
 
 const args = {
   numIters: 3,
-  numEps: 25,
+  numEps: 4, // 25,
   tempThreshold: 15,
   updateThreshold: 0.6,
   maxlenOfQueue: 200000,
