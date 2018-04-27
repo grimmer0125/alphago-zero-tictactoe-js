@@ -299,16 +299,18 @@ class TicTacToeApp extends React.Component {
     }
 
     return (
-      <div className="game">
+      <div>
+        <div className="game-info">
+          <div>
+            <ol>{moves}</ol>
+          </div>
+          <div className="game-status">{status}</div>
+        </div>
         <div className="game-board">
           <TicTacToeBoard
             squares={current.squares}
             onClick={i => this.handleClick(i, 1)}
           />
-        </div>
-        <div className="game-info">
-          <div>{status}</div>
-          <ol>{moves}</ol>
         </div>
       </div>
     );

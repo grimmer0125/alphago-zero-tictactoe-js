@@ -46,7 +46,14 @@ ol, ul {
 }
 
 .game-info {
+  display: flex;
   margin-left: 20px;
+}
+
+.game-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 button {
@@ -59,4 +66,8 @@ button {
     /* text-decoration: none;
     display: inline-block; */
     font-size: 16px;
+}
+
+ol {
+  list-style: none;
 }
