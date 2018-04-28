@@ -64,20 +64,20 @@ export class NNetWrapper extends NeuralNet {
     // self.nnet.model.fit(x = input_boards, y = [target_pis, target_vs],
     // batch_size = args.batch_size, epochs = args.epochs)
 
-    try {
-      const history = await this.nnet.model.fit(xTrain, [yTrain1, yTrain2], {
-        shuffle: true,
-        batchSize: args.batch_size,
-        epochs: args.epochs, // params.epochs, //iris, default 40, use epoch as batch
-        callbacks: {
-          onEpochEnd: (epoch, logs) => {
-            console.log('onEpochEnd');
-          },
+    // try {
+    const history = await this.nnet.model.fit(xTrain, [yTrain1, yTrain2], {
+      shuffle: true,
+      batchSize: args.batch_size,
+      epochs: args.epochs, // params.epochs, //iris, default 40, use epoch as batch
+      callbacks: {
+        onEpochEnd: (epoch, logs) => {
+          console.log('onEpochEnd');
         },
-      });
-    } catch (err) {
-      console.log('train error:', err);
-    }
+      },
+    });
+    // } catch (err) {
+    //   console.log('train error:', err);
+    // }
 
 
     console.log('training-2: after fit');
