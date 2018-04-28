@@ -80,10 +80,13 @@ class App extends Component {
         </header> */}
         <div>
           <div>
-            AlphaGo Zero TicTacToe Game, using TensorFlow.js
+            <h1>AlphaGo Zero TicTacToe Game, using TensorFlow.js
+            </h1>
           </div>
           <div>
-            Development only part:
+            <h3>
+              {'Development only part:'}
+            </h3>
           </div>
           {/* <p className="App-intro">
             <code>No UI</code> refers to use Console to debug or see the results.
@@ -95,8 +98,17 @@ class App extends Component {
           </div>
           <div style={{ margin: 10 }}>
             <Button onClick={this.startTrain}>
-              Start self-Train (console result)
+              {'Start self-Train (console result)'}
             </Button>
+          </div>
+          <div>
+            {'Training is buggy, also its monte-carlo simulation'}
+          </div>
+          <div>
+            {'uses heavy cpu loading and slow down/hang your browser'}
+          </div>
+          <div>
+            {'may use service worker to overcome it'}
           </div>
           {/* <div>
             <button onClick={this.selfTrainVSRandom}>
@@ -116,7 +128,9 @@ class App extends Component {
           </div>
           <hr />
           <div>
+            <h3>
             Users part: 1. download 2. enable AI 3. click start (AI may take a while to think)
+            </h3>
           </div>
           {/* <div>
             <button onClick={this.userVSPretrained}>
@@ -286,7 +300,7 @@ class TicTacToeApp extends React.Component {
         'Start new game';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <Button onClick={() => this.jumpTo(move)}>{desc}</Button>
         </li>
       );
     });

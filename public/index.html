@@ -22,7 +22,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-  <title>React App</title>
+  <title>React TicTacToe AlphaGo App</title>
 </head>
 
 <body>
@@ -56,11 +56,11 @@
         e.preventDefault();
       }
     });
-    window.onerror = function(message, source, line, col, error) {
-      var text = error ? error.stack || error : message + ' (at ' + source + ':' + line + ':' + col + ')';
-      errors.textContent += text + '\n';
-      errors.style.display = '';
-    };
+    // window.onerror = function(message, source, line, col, error) {
+    //   var text = error ? error.stack || error : message + ' (at ' + source + ':' + line + ':' + col + ')';
+    //   errors.textContent += text + '\n';
+    //   errors.style.display = '';
+    // };
     console.error = (function(old) {
       return function error() {
         errors.textContent += Array.prototype.slice.call(arguments).join(' ') + '\n';
