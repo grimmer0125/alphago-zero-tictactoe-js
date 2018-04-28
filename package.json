@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://grimmer0125.github.io/alphago-zero-tictactoe-js",
   "dependencies": {
-    "@tensorflow/tfjs": "^0.9.1",
+    "@tensorflow/tfjs": "^0.10.3",
     "deepcopy": "^0.6.3",
     "numjs": "^0.15.1",
     "react": "^16.3.2",
