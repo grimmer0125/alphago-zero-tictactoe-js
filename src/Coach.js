@@ -2,6 +2,7 @@ import MCTS from './MCTS';
 import deepcopy from 'deepcopy';
 import Utils from './Utils';
 import Arena from './Arena';
+import * as players from './tictactoe/TicTacToePlayers';
 
 export default class Coach {
   // """
@@ -12,7 +13,7 @@ export default class Coach {
     console.log('Coach constructer');
     this.game = game;
     this.nnet = nnet;
-    this.pnet = null; // this.nnet.constructor(this.game);
+    // this.pnet = null; // this.nnet.constructor(this.game);
     // self.pnet = self.nnet.__class__(self.game)??
     this.args = args;
     this.mcts = new MCTS(this.game, this.nnet, this.args);
@@ -123,31 +124,33 @@ export default class Coach {
       // # training new network, keeping a copy of the old one
       // self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
       // self.pnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
-      this.pnet = deepcopy(this.nnet);
-      const pmcts = new MCTS(this.game, this.pnet, this.args);
+      // this.pnet = deepcopy(this.nnet);
+      // const pmcts = new MCTS(this.game, this.pnet, this.args);
 
       const flattenExamples = [].concat.apply([], this.trainExamplesHistory);
       await this.nnet.train(flattenExamples);
       console.log('after training 1 time');
+
       const nmcts = new MCTS(this.game, this.nnet, this.args);
-      console.log('PITTING AGAINST PREVIOUS VERSION');
+      console.log('PITTING AGAINST Random VERSION');
+      const firstPlayr = new players.RandomPlayer(this.game);
       const arena = new Arena(
-        { play: x => Utils.argmax(pmcts.getActionProb(x, 0)) },
+        firstPlayr,
+        // { play: x => Utils.argmax(pmcts.getActionProb(x, 0)) },
         { play: x => Utils.argmax(nmcts.getActionProb(x, 0)) },
         this.game,
       );
-      const { pwins, nwins, draws } = arena.playGames(this.args.arenaCompare);
-
-      console.log('NEW/PREV WINS : %d / %d ; DRAWS : %d', nwins, pwins, draws);
-      if ((pwins + nwins) > 0 && nwins / (pwins + nwins) < this.args.updateThreshold) {
-        console.log('REJECTING NEW MODEL');
-        this.nnet = this.pnet;
-        // self.nnet.load_checkpoint(folder = self.args.checkpoint, filename = 'temp.pth.tar');
-      } else {
-        console.log('ACCEPTING NEW MODEL');
-        // self.nnet.save_checkpoint(folder = self.args.checkpoint, filename = self.getCheckpointFile(i));
-        // self.nnet.save_checkpoint(folder = self.args.checkpoint, filename = 'best.pth.tar');
-      }
+      const { oneWon, twoWon, draws } = arena.playGames(this.args.arenaCompare);
+      console.log('NEW/RANDOM WINS : %d / %d ; DRAWS : %d', twoWon, oneWon, draws);
+      // if ((pwins + nwins) > 0 && nwins / (pwins + nwins) < this.args.updateThreshold) {
+      //   console.log('REJECTING NEW MODEL');
+      //   this.nnet = this.pnet;
+      //   // self.nnet.load_checkpoint(folder = self.args.checkpoint, filename = 'temp.pth.tar');
+      // } else {
+      //   console.log('ACCEPTING NEW MODEL');
+      //   // self.nnet.save_checkpoint(folder = self.args.checkpoint, filename = self.getCheckpointFile(i));
+      //   // self.nnet.save_checkpoint(folder = self.args.checkpoint, filename = 'best.pth.tar');
+      // }
     }
 
     console.log('finish learning');

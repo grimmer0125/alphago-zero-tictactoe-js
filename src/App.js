@@ -25,10 +25,10 @@ class App extends Component {
     train();
   }
 
-  // selfTrainVSRandom = () => {
-  //   console.log('selfTrainVSRandom');
-  //   play(1);
-  // }
+  selfTrainVSRandom = () => {
+    console.log('selfTrainVSRandom');
+    play(1);
+  }
 
   // userVSuser = () => {
   // }
@@ -98,7 +98,7 @@ class App extends Component {
           </div>
           <div style={{ margin: 10 }}>
             <Button onClick={this.startTrain}>
-              {'Start self-Train (console result)'}
+              {'Start self-Train (console result), about 10~20 mins'}
             </Button>
           </div>
           <div>
@@ -110,11 +110,11 @@ class App extends Component {
           <div>
             {'may use service worker to overcome it'}
           </div>
-          {/* <div>
-            <button onClick={this.selfTrainVSRandom}>
-              No UI. Self-trained vs Random
-            </button>
-          </div> */}
+          <div style={{ margin: 10 }}>
+            <Button onClick={this.selfTrainVSRandom}>
+              Self-trained vs Random
+            </Button>
+          </div>
           {/* <div>
             <button onClick={this.userVSSelfTrain}>
               user VS SelfTrained

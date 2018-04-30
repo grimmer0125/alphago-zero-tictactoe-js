@@ -12,15 +12,17 @@ import * as players from './tictactoe/TicTacToePlayers';
 // from tictactoe.TicTacToePlayers import *
 
 // TicTacToeGame reference
-let humanGame = null;
+// seems that it does not need to be reused
+// const humanGame = null;
+
 let preTrainedModel = null;
 let humanArena = null;
 
 export async function downloadPretrained() {
   if (!preTrainedModel) {
-    if (!humanGame) {
-      humanGame = new TicTacToeGame();
-    }
+    // if (!humanGame) {
+    const humanGame = new TicTacToeGame();
+    // }
     preTrainedModel = new NNet(humanGame);
     // firstPlayr = new players.RandomPlayer(g);
     await preTrainedModel.loadPretrained('https://grimmer.io/alphago-tictactoe-keras-trained/model.json');
@@ -44,7 +46,7 @@ export function humanMove(action) {
  *  3: 1 pretrained vs human
  */
 export default function play(mode, aiFirst) {
-  let g = new TicTacToeGame();
+  const g = new TicTacToeGame();
   let firstPlayr = null;
   if (!mode) {
     firstPlayr = new players.RandomPlayer(g);
@@ -74,7 +76,7 @@ export default function play(mode, aiFirst) {
       return;
     }
     // if (mode === 3) {
-    g = humanGame;
+    // g = humanGame;
     // }
 
     const args1 = { numMCTSSims: 50, cpuct: 1.0 }; // dotdict({ numMCTSSims:
@@ -108,6 +110,6 @@ export default function play(mode, aiFirst) {
   const rp2 = new players.RandomPlayer(g);// .play;
 
   const arena = new Arena(firstPlayr, rp2, g, display);
-  console.log(arena.playGames(10, false));
+  console.log(arena.playGames(25, false));
   console.log('finish');
 }
