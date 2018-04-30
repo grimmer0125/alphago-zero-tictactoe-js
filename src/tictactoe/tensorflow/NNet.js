@@ -14,6 +14,8 @@ const args = {
   num_channels: 512,
 };
 
+const dummyBoard = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+
 export class NNetWrapper extends NeuralNet {
   constructor(game) {
     super();
@@ -27,15 +29,60 @@ export class NNetWrapper extends NeuralNet {
     console.log('NNetWrapper constructer');
   }
 
-  async train(examples) {
-    console.log('train -1. epoch size:', args.batch_size);
-    console.log('examples:', examples);
-    const total = examples.length;
+
+  useDummyData(total) {
+    const input_board = dummyBoard; // [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
 
     const inputData = [];
     const pisData = [];
-    const vsData = [];
 
+    for (let i = 0; i < total; i++) {
+      // push a 3x3 array, each element is 1/-1/0
+      inputData.push(input_board);
+
+      pisData.push(Array(10).fill(0));
+    }
+    const vsData = Array(total).fill(-1);
+
+    return [inputData, pisData, vsData];
+  }
+
+  async trainWithDummyData() {
+    console.log('try to predict once before train with dummy !!');
+    this.predict(null);
+    console.log('trainWithDummyData -start. epoch size:', args.batch_size);
+    const total = 232;
+    const [inputData, pisData, vsData] = this.useDummyData(total);
+
+    let xTrain = tf.tensor3d(inputData, [total, 3, 3]);
+    xTrain = xTrain.reshape([total, 3, 3, 1]);
+
+    const yTrain1 = tf.tensor2d(pisData); // , [total, 10]);
+    const yTrain2 = tf.tensor2d(vsData, [total, 1]); // 784
+    console.log('start train');
+
+    const history = await this.nnet.model.fit(xTrain, [yTrain1, yTrain2], {
+      shuffle: true,
+      batchSize: args.batch_size,
+      epochs: args.epochs, // params.epochs, //iris, default 40, use epoch as batch
+      callbacks: {
+        onEpochEnd: (epoch, logs) => {
+          console.log('onEpochEnd');
+        },
+      },
+    });
+
+    console.log('trainWithDummyData-end: after fit');
+  }
+
+  async train(examples) {
+    console.log('train -1. epoch size:', args.batch_size);
+    console.log('examples:', examples);
+
+    const total = examples.length;
+    const inputData = [];
+    const pisData = [];
+    const vsData = [];
     for (let i = 0; i < total; i++) {
       const example = examples[i];
       const { input_boards, target_pis, target_vs } = example;
@@ -92,11 +139,12 @@ export class NNetWrapper extends NeuralNet {
   }
 
   predict(boardNdArray) {
+    console.log('start predict');
     // console.log('prediction');
 
     try {
       // # preparing input
-      let input = boardNdArray.tolist();
+      let input = dummyBoard;// boardNdArray.tolist();
 
       // TODO remove hard code [1,3,3]
       input = tf.tensor3d([input], [1, 3, 3]);

@@ -7,11 +7,11 @@ export default class TicTacToeNNet {
     // tf.setBackend('cpu');
     // console.log('tf.getBackend:', tf.getBackend());
 
-    const { a, b } = game.getBoardSize();
-    this.board_x = a;
-    this.board_y = b;
-    this.args = args;
-    this.action_size = game.getActionSize();
+    // const { a, b } = game.getBoardSize();
+    this.board_x = 3;// a; // 3
+    this.board_y = 3;// b; // 3
+    // this.args = args;
+    this.action_size = 10;// game.getActionSize(); // 10
 
     // BatchNormalization:
     // keras: https://keras-cn.readthedocs.io/en/latest/layers/normalization_layer/
@@ -23,7 +23,7 @@ export default class TicTacToeNNet {
     const conv2d_padding = () => tf.layers.conv2d({
       // inputShape: [this.board_x, this.board_y, 1],
       kernelSize: 3, // 3x3 filter
-      filters: args.num_channels, // 512??
+      filters: 512, // args.num_channels, // 512??
       padding: 'same',
       // strides: 1, // ?
       // activation: 'relu',
@@ -31,7 +31,7 @@ export default class TicTacToeNNet {
     });
     const conv2d_valid = () => tf.layers.conv2d({
       kernelSize: 3,
-      filters: args.num_channels,
+      filters: 512, // args.num_channels,
       padding: 'valid',
     });
     const dropout = () => tf.layers.dropout({ rate: this.dropout });
@@ -57,7 +57,7 @@ export default class TicTacToeNNet {
 
     // Create the model based on the inputs.
     this.model = tf.model({ inputs: input, outputs: [output1, output2] });
-    const optimizer = tf.train.adam(args.lr); // irir default//params.learningRate);
+    const optimizer = tf.train.adam(0.001);// args.lr); // irir default//params.learningRate);
     this.model.compile({
       optimizer,
       loss: ['categoricalCrossentropy', 'meanSquaredError'],

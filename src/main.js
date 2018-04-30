@@ -25,7 +25,15 @@ export function getTrainedNN() {
   return globalNN;
 }
 
+export async function useDummyDataToTrain() {
+  const g = new TicTacToeGame();
+  const nnet = new NNet(g);
+  await nnet.trainWithDummyData();
+}
+
 export default function train() {
+  console.log('in train !!');
+
   const g = new TicTacToeGame();
   const nnet = new NNet(g);
 
