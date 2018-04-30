@@ -48,8 +48,11 @@ export class NNetWrapper extends NeuralNet {
   }
 
   async trainWithDummyData() {
-    console.log('try to predict once before train with dummy !!');
-    this.predict(null);
+    const predictTimes = 1104;
+    console.log('try to predict %d before train with dummy !!', predictTimes);
+    for (let i = 0; i < predictTimes; i++) {
+      this.predict(null);
+    }
     console.log('trainWithDummyData -start. epoch size:', args.batch_size);
     const total = 232;
     const [inputData, pisData, vsData] = this.useDummyData(total);
