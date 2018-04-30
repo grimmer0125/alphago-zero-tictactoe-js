@@ -20,12 +20,12 @@ export default class MCTS {
 
   // return a array-like object
   getActionProb(canonicalBoard, temp = 1) {
-    console.log('getActionProb 1');
+    // console.log('getActionProb 1');
     for (let i = 0; i < this.args.numMCTSSims; i++) {
       // console.log(`MCTS loop:${i}`);
       this.search(canonicalBoard);
     }
-    console.log('getActionProb MCTS loop ends');
+    // console.log('getActionProb MCTS loop ends');
     const s = this.game.stringRepresentation(canonicalBoard);
 
     const aSize = this.game.getActionSize();
@@ -50,7 +50,7 @@ export default class MCTS {
     counts = counts.map(x => x ** (1.0 / temp));
     const sum = counts.reduce((x, y) => x + y);
     probs = counts.map(x => x / sum);
-    console.log('getActionProb 2');
+    // console.log('getActionProb 2');
     return probs;
   }
 

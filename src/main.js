@@ -19,17 +19,17 @@ const args = {
 
 };
 
-let globalNN = null;
+let trainedNN = null;
 
 export function getTrainedNN() {
-  return globalNN;
+  return trainedNN;
 }
 
-export default function train() {
+export default async function train() {
   const g = new TicTacToeGame();
   const nnet = new NNet(g);
 
-  globalNN = nnet;
+  trainedNN = nnet;
 
   // TODO: low priority
   // if args.load_model:
@@ -40,5 +40,5 @@ export default function train() {
   // print("Load trainExamples from file")
   // c.loadTrainExamples()
 
-  c.learn();
+  await c.learn();
 }

@@ -12,7 +12,7 @@ npm install
 npm start // build and launch its live dev web server.
 ```
 
-Use the debugging UI and Browers' console to debug. After `npm start`, you can also use `VS Code` with `Debugger for Chrome` extension to debug.
+After `npm start`, you can also use `VS Code` with `Debugger for Chrome` extension to debug.
 
 ## Features and done itmes of todo list
 
@@ -24,7 +24,7 @@ by using Python.
 
 ## TODO
 
-1. Fix bugs to train models by this JavaScript version project. It may be a TensorFlow.js bug. Maybe waitting for native TensorFlow Node.js binding is better than WebGL solution.
+1. ~~Fix bugs to train models by this JavaScript version project. It may be a TensorFlow.js bug. Maybe waitting for native TensorFlow Node.js binding is better than WebGL solution.~~
 2. ~~Add UI.~~
 3. Clean up.
-4. Use service worker for cpu/gpu heavy loading part.
+4. Use service worker for cpu heavy loading part.

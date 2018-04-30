@@ -14,6 +14,7 @@ class App extends Component {
       enabledAI: false,
       aiIsDownloaded: false,
       aiFirst: true,
+      selfTrained: false,
     };
   }
 
@@ -21,8 +22,11 @@ class App extends Component {
     play();
   }
 
-  startTrain = () => {
-    train();
+  startTrain = async () => {
+    console.log('start-train');
+    await train();
+    console.log('end-train');
+    this.setState({ selfTrained: true });
   }
 
   selfTrainVSRandom = () => {
@@ -34,7 +38,7 @@ class App extends Component {
   // }
 
   twoRandowmPlayWithPretrained = async () => {
-    await play(2);
+    play(2);
   }
 
   downloadPretrained = async () => {
@@ -55,12 +59,15 @@ class App extends Component {
   startNewGame = () => {
     console.log('start new game');
     if (this.state.enabledAI) {
-      if (this.state.aiIsDownloaded === false) {
-        alert('ai is not download yer');
+      if (this.state.selfTrained === false && this.state.aiIsDownloaded === false) {
+        alert('ai is not download yet');
       }
-
-      const action = play(3, this.state.aiFirst);
-
+      let action;
+      if (this.state.selfTrained) {
+        action = play(4, this.state.aiFirst);
+      } else {
+        action = play(3, this.state.aiFirst);
+      }
       this.setState((prevState, props) => ({ aiFirst: !prevState.aiFirst }));
 
       if (action >= 0) {
@@ -97,18 +104,18 @@ class App extends Component {
             </Button>
           </div>
           <div style={{ margin: 10 }}>
-            <Button onClick={this.startTrain}>
-              {'Start self-Train (console result), about 10~20 mins'}
+            <Button onClick={this.startTrain} disabled={this.state.selfTrained}>
+              {'Start self-Train (console result), about 18 mins'}
             </Button>
           </div>
           <div>
-            {'Training is buggy, also its monte-carlo simulation'}
+            {'Monte-carlo simulation has big cpu loading'}
           </div>
           <div>
-            {'uses heavy cpu loading and slow down/hang your browser'}
+            {'Neural network has big gpu loading. They will slow down/hang your browser/computer'}
           </div>
           <div>
-            {'may use service worker to overcome it'}
+            {'After finishing, it will replace download model'}
           </div>
           <div style={{ margin: 10 }}>
             <Button onClick={this.selfTrainVSRandom}>
@@ -140,13 +147,13 @@ class App extends Component {
           <div>
             {'Player vs Player '}
             <Checkbox
-              label="Enable downloaded AI for one Player"
+              label="Enable downloaded/trained AI for one Player"
               onChange={this.toggleAI}
               checked={this.state.enabledAI}
             />
           </div>
           <div>
-            {!this.state.aiIsDownloaded ?
+            {!this.state.selfTrained && !this.state.aiIsDownloaded ?
               <Button onClick={this.downloadPretrained}>
                 {'Download 32MB Pretrained Model (from Python+Keras)'}
               </Button> : null}

@@ -44,68 +44,58 @@ export function humanMove(action) {
  *  1: self-trained vs rp
  *  2: 1 pretrained vs rp
  *  3: 1 pretrained vs human
+ *  4: self-treained vs human
  */
 export default function play(mode, aiFirst) {
   const g = new TicTacToeGame();
+  const args1 = { numMCTSSims: 50, cpuct: 1.0 };
+  let n1;
+  let mcts1 = null;
   let firstPlayr = null;
-  if (!mode) {
-    firstPlayr = new players.RandomPlayer(g);
-  } else if (mode === 1) {
-    // nnet players
 
-    // TODO: Not test yet
-    // const n1 = new NNet(g);
-    // n1.load_checkpoint('./pretrained_models/tictactoe/keras/', 'best.pth-grimmer2-less.tar');
-
-    const n1 = getTrainedNN();
-    const args1 = { numMCTSSims: 50, cpuct: 1.0 }; // dotdict({ numMCTSSims:
-    const mcts1 = new MCTS(g, n1, args1);
-
-    // python ver.: n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
-    const n1p = (x) => {
-      const list = mcts1.getActionProb(x, 0);
-      return Utils.argmax(list);
-    };
-    firstPlayr = { play: n1p };
-    // const arena = Arena.Arena({play:n1p}, rp2, g, display);
+  if (mode === 1 || mode === 4) {
+    n1 = getTrainedNN();
+    if (!n1) {
+      console.log('no trainedModel, return');
+      return;
+    }
   } else if (mode === 2 || mode === 3) {
-    // const n1 = getGlobalNN;
-
-    if (!preTrainedModel) {
+    n1 = preTrainedModel;
+    if (!n1) {
       console.log('no preTrainedModel, return');
       return;
     }
-    // if (mode === 3) {
-    // g = humanGame;
-    // }
-
-    const args1 = { numMCTSSims: 50, cpuct: 1.0 }; // dotdict({ numMCTSSims:
-    const mcts1 = new MCTS(g, preTrainedModel, args1);
-
-    // python ver.: n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
-    const n1p = (x) => {
-      const list = mcts1.getActionProb(x, 0);
-      return Utils.argmax(list);
-    };
-    firstPlayr = { play: n1p };
-
     console.log('load pretraind to play');
-
-    if (mode === 3) {
-      const hp = new players.HumanTicTacToePlayer(g);// .play
-      if (aiFirst) {
-        humanArena = new Arena(firstPlayr, hp, g, display);
-      } else {
-        humanArena = new Arena(hp, firstPlayr, g, display);
-      }
-      const action = humanArena.playNewGameWithHuman();
-
-      return action;
-    }
   } else {
     console.log('invalid mode, return');
     return;
   }
+
+  if (mode) {
+    mcts1 = new MCTS(g, n1, args1);
+
+    const n1p = (x) => {
+      const list = mcts1.getActionProb(x, 0);
+      return Utils.argmax(list);
+    };
+    firstPlayr = { play: n1p };
+  } else {
+    firstPlayr = new players.RandomPlayer(g);
+  }
+
+  if (mode === 3 || mode === 4) {
+    const hp = new players.HumanTicTacToePlayer(g);// .play
+    if (aiFirst) {
+      humanArena = new Arena(firstPlayr, hp, g, display);
+    } else {
+      humanArena = new Arena(hp, firstPlayr, g, display);
+    }
+    const action = humanArena.playNewGameWithHuman();
+
+    return action;
+  }
+
+
   // const rp = new players.RandomPlayer(g);// .play;
   const rp2 = new players.RandomPlayer(g);// .play;
 
