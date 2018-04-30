@@ -61,7 +61,7 @@ export default class TicTacToeNNet {
     this.model.compile({
       optimizer,
       loss: ['categoricalCrossentropy', 'meanSquaredError'],
-      metrics: ['accuracy'], // <- optional
+      // metrics: ['accuracy'], // <- optional
     });
     console.log('model:', this.model);
     console.log(JSON.stringify(this.model));
