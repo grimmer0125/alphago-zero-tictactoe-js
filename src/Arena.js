@@ -79,7 +79,7 @@ export default class Arena {
   swapTwoPlayers() {
     console.log('swap');
     const tmpPlayer1 = this.player1;
-    this.player1 = this.player2,
+    this.player1 = this.player2;
     this.player2 = tmpPlayer1;
   }
 
@@ -175,8 +175,8 @@ export default class Arena {
     // eps_time = AverageMeter()
     // bar = Bar('Arena.playGames', max=num)
     // end = time.time()
-    const esp = 0;
-    const maxeps = Math.floor(num); // int(num)
+    // const esp = 0;
+    // const maxeps = Math.floor(num); // int(num)
 
     num = Math.floor(num / 2);
     let oneWon = 0;

@@ -112,6 +112,7 @@ export default class MCTS {
 
       this.Vs[s] = valids;
       this.Ns[s] = 0;
+      return v;
     }
 
     const valids = this.Vs[s];

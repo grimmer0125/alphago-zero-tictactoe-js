@@ -1,6 +1,4 @@
 import { NeuralNet } from '../../NeuralNet';
-import deepcopy from 'deepcopy';
-import nj from 'numjs';
 import * as tf from '@tensorflow/tfjs';
 
 import TicTacToeNNet from './TicTacToeNNet';
@@ -141,7 +139,6 @@ export class NNetWrapper extends NeuralNet {
   }
 
   save_checkpoint(folder = 'checkpoint', filename = 'checkpoint.pth.tar') {
-    // use deepcopy instead of using a file
   }
 
   load_checkpoint(folder = 'checkpoint', filename = 'checkpoint.pth.tar') {

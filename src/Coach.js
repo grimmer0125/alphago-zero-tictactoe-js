@@ -1,5 +1,4 @@
 import MCTS from './MCTS';
-import deepcopy from 'deepcopy';
 import Utils from './Utils';
 import Arena from './Arena';
 import * as players from './tictactoe/TicTacToePlayers';
