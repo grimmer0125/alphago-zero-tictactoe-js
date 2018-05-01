@@ -122,7 +122,9 @@ export default class Arena {
     return action;
   }
 
-  // TODO: 1.可以由ui寫要不要自動restart的logic, 2. call swap function 也是
+  // TODO:
+  // 1. [done] let ui responsbile for the logic about restarts a game
+  // 2. [done] let ui responsbile for calling swap function
   // 3. handle the case to give up+restart game. this.game needs reset
   playNewGameWithHuman() {
     this.players = [this.player2, null, this.player1];

@@ -4,9 +4,10 @@ export class RandomPlayer {
     this.game = game;
   }
 
-  play= (board) => {
-    let a = Math.floor(Math.random() * this.game.getActionSize());
+  play = (board) => {
+    // Python:
     // a = np.random.randint(self.game.getActionSize()) [0, low)
+    let a = Math.floor(Math.random() * this.game.getActionSize());
     let valids = this.game.getValidMoves(board, 1);
     valids = valids.tolist();
 
@@ -17,15 +18,10 @@ export class RandomPlayer {
   }
 }
 
-// TODO: low priority
 export class HumanTicTacToePlayer {
   constructor(game) {
     console.log('HumanTicTacToePlayer constructer');
     this.game = game;
     this.isHuman = true;
-  }
-
-  play = (board) => {
-
   }
 }

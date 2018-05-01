@@ -4,7 +4,7 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "針對 localhost 啟動 Chrome",
+            "name": "Launch Chrome For localhost",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
             "runtimeArgs": [

@@ -140,12 +140,10 @@ export class NNetWrapper extends NeuralNet {
     }
   }
 
-  // NOTE: low priority
   save_checkpoint(folder = 'checkpoint', filename = 'checkpoint.pth.tar') {
     // use deepcopy instead of using a file
   }
 
-  // NOTE: low priority
   load_checkpoint(folder = 'checkpoint', filename = 'checkpoint.pth.tar') {
   }
 }

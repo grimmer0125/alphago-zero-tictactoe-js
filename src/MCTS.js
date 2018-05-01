@@ -18,7 +18,7 @@ export default class MCTS {
     this.Vs = {}; // stores game.getValidMoves for board s
   }
 
-  // return a array-like object
+  // return a array object
   getActionProb(canonicalBoard, temp = 1) {
     // console.log('getActionProb 1');
     for (let i = 0; i < this.args.numMCTSSims; i++) {
@@ -54,6 +54,7 @@ export default class MCTS {
     return probs;
   }
 
+  // Python:
   // """
   // This function performs one iteration of MCTS. It is recursively called
   // till a leaf node is found. The action chosen at each node is one that
@@ -86,13 +87,15 @@ export default class MCTS {
 
     if (this.Ps.hasOwnProperty(s) == false) {
       // # leaf node
-      // QUESTION: v為[0.x] , array1x1的ndarray !! u應該也是, qsa
+      // NOTE: Python ver.: v is ndarray type: [0.x]. qsa, too.
+      // JavaScript: v is just a number value.
       const resp = this.nnet.predict(canonicalBoard);
       this.Ps[s] = resp.Ps;
       const v = resp.v;// .get(0);
 
       const valids = this.game.getValidMoves(canonicalBoard, 1);
-      // NB: Array multiplication is not matrix multiplication:
+      // NOTE: : Array multiplication is not matrix multiplication:
+      // Python: self.Ps[s] = self.Ps[s]*valids
       this.Ps[s] = nj.multiply(this.Ps[s], valids); // # masking invalid moves
       const sum_Ps_s = nj.sum(this.Ps[s]);
       if (sum_Ps_s > 0) {
@@ -109,8 +112,6 @@ export default class MCTS {
 
       this.Vs[s] = valids;
       this.Ns[s] = 0;
-
-      // self.Ps[s] = self.Ps[s]*valids
     }
 
     const valids = this.Vs[s];
@@ -119,22 +120,29 @@ export default class MCTS {
     const aSize = this.game.getActionSize();
     // # pick the action with the highest upper confidence bound
     for (let a = 0; a < aSize; a++) {
-      // NB valid is a ndarray
+      // NOTE: valid is a ndarray
       if (valids.get(a) > 0) {
         const saKey = `${s};${a}`;
         let u;
         if (this.Qsa.hasOwnProperty(saKey)) {
-          // TODO: check. type: [value], ndrray. case0.
-          // this.Ps的access可以直接[][]嗎? 還有Qsa[]出來的應該是 [0.x],
-          // 可能也要改, 這個直接改一開始的predict result v就好了
+          // case1
+          // Python:
+          // 1. this.Ps[s][a] is using Dictionary's[] + ndarray's[]
+          // 2. this.Qsa[saKey] returns ndarray type. [value], and it can add a number,
+          // so u = this.Qsa[saKey] + ... gets a [value]
+
+          // JavaScript version here: u gets a value, this.Qsa[saKey] is value too.
           u = this.Qsa[saKey] + this.args.cpuct * this.Ps[s].get(a) * Math.sqrt(this.Ns[s]) / (1 + this.Nsa[saKey]);
         } else {
-          // TODO: check. type:value
-          u = this.args.cpuct * this.Ps[s].get(a) * Math.sqrt(this.Ns[s] + EPS); //    # Q = 0 ?
+          // case2
+          // Python: u gets a value. JS, too.
+          // grimmer's QUESTION: # original Python's comment: "Q = 0 ?" what does it mean?
+          u = this.args.cpuct * this.Ps[s].get(a) * Math.sqrt(this.Ns[s] + EPS);
         }
 
-        // QUESTION: : 可能會有value 跟 ndarray [x] 的比較需求出現, case1
-        // 以及 -v, -1*numjs的case2, 還有  // case4
+        // Python: somtimes u is value, sometimes it is [value]
+        //         if a ndarray is [value], it can compare with value
+        // JavaScript: To be more clear, use specified ways to let u get value always
         if (u > cur_best) {
           cur_best = u;
           best_act = a;
@@ -149,10 +157,10 @@ export default class MCTS {
     const next_player = nextState.curPlayer;
 
     next_s = this.game.getCanonicalForm(next_s, next_player);
+    // v (value): number
     const v = this.search(next_s);
     const saKey = `${s};${a}`;
     if (this.Qsa.hasOwnProperty(saKey)) {
-      // TODO: check, case4
       this.Qsa[saKey] = (this.Nsa[saKey] * this.Qsa[saKey] + v) / (this.Nsa[saKey] + 1);
 
       this.Nsa[saKey] += 1;

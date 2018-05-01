@@ -13,8 +13,8 @@ export class TicTacToeGame extends Game {
 
   getInitBoardNdArray() {
     const b = new Board(this.n);
+    // return np.array(b.pieces), Python
     return nj.array(b.pieces);
-    // return np.array(b.pieces)
   }
 
   // used by *NNet classes
@@ -23,7 +23,7 @@ export class TicTacToeGame extends Game {
   }
 
   // return number of actions
-  // QUESTION: why +1, grimmer?
+  // grimmer's QUESTION: why +1, ? neural network's bias?
   getActionSize() {
     return (this.n * this.n) + 1;
   }
@@ -31,16 +31,14 @@ export class TicTacToeGame extends Game {
   getNextState(boardNdArray, player, action) {
     // # if player takes action on board, return next (board,player)
     // # action must be a valid move
-    // QUESTION: why this condition, grimmer?
     if (action === this.n * this.n) {
       // return (board, -player)
       console.log('invalid action');
       return { boardNdArray, player: -player };
     }
 
-    // b = Board(self.n)
-    // b.pieces = np.copy(board)
     const b = new Board(this.n);
+    // b.pieces = np.copy(board), Python
     b.pieces = boardNdArray.tolist();
 
     const move = { x: Math.floor(action / this.n), y: (action % this.n) };
@@ -50,17 +48,17 @@ export class TicTacToeGame extends Game {
 
   // return a list, 會受getCanonicalForm影響嗎? 不會.
   getValidMoves(boardNdArray, player) {
-  // # return a fixed size binary vector
-  // valids = [0]*this.getActionSize()
+    // Python:
+    // # return a fixed size binary vector
+    // valids = [0]*this.getActionSize()
+    // b.pieces = np.copy(board)
     const valids = Array(this.getActionSize()).fill(0);
     const b = new Board(this.n);
-    // b.pieces = np.copy(board)
     b.pieces = boardNdArray.tolist();
 
     const legalMoves = b.get_legal_moves(player);
     if (legalMoves.length === 0) {
       valids[valids.length - 1] = 1;
-      // valids[-1]=1 // the last item
       return nj.array(valids);
     }
 
@@ -74,6 +72,7 @@ export class TicTacToeGame extends Game {
   }
 
   getGameEnded(boardNdArray, player) {
+    // Python:
     // # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
     // # player = 1
     const b = new Board(this.n);
@@ -92,21 +91,22 @@ export class TicTacToeGame extends Game {
     return 1e-4;
   }
 
-  // at least not useful for playing. Useful for training (executeEpisode)?
+  // grimmer's QUESTION: at least not useful for playing. Useful for training (executeEpisode)?
   getCanonicalForm(boardNdArray, player) {
+    // Python:
     // # return state if player==1, else return -state if player==-1
     // return player*board
     return nj.multiply(boardNdArray, player);
   }
 
+  // boardNdArray: 3x3 ndarray
   // e.g. pi:[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
   getSymmetries(boardNdArray, pi) {
     if (pi.length !== this.n ** 2 + 1) {
       throw 'not valid pi for Symmetries';
     }
 
-    // boardNdArray 3x3 ndarray
-    // pi[:-1] 拿掉最後一個.
+    // Python: pi[:-1]. Remove the last one
     const pi_copy = pi.slice();
     pi_copy.pop();
     const pi_board = nj.reshape(pi_copy, [this.n, this.n]);
@@ -117,25 +117,26 @@ export class TicTacToeGame extends Game {
         let newB = nj.rot90(boardNdArray, i);
         let newPi = nj.rot90(pi_board, i);
         if (j) {
-          // newB = np.fliplr(newB)
+          // Python:newB = np.fliplr(newB)
           newB = nj.flip(newB, 1);
           newPi = nj.flip(newPi, 1);
         }
-        // p: ordinary 1d array.
+        // Python:
+        // p: ordinary 1d array. after reshape
         //         >>> y2
         // array([[3, 2, 1],
         //        [6, 5, 4],
         //        [9, 8, 7]])
-        // >>> y2.ravel()
-        // array([3, 2, 1, 6, 5, 4, 9, 8, 7])
+        // >>> y2.ravel() ~ numjy's flatten
+        // array([3, 2, 1, 6, 5, 4, 9, 8, 7]). ndarray type
         // after list
-        // [3, 2, 1, 6, 5, 4, 9, 8, 7] !!
+        // [3, 2, 1, 6, 5, 4, 9, 8, 7] !!. list type
         // + [pi[-1] (e.g. [33])
         // [3, 2, 1, 6, 5, 4, 9, 8, 7, 33]
         const p = nj.flatten(newPi).tolist();
         p.push(pi[pi.length - 1]);
         const element = { b: newB, p };
-        // l += [(newB, )]
+        // l += [(newB, )], Python
         l.push(element);
       }
     }
@@ -170,16 +171,16 @@ export function display(boardNdArray) {
   const n = boardNdArray.shape[0];
   const list = boardNdArray.tolist();
   print('  ', '');
+  // Pyton:
+  // for y in range(n):
+  //     print (y,"", end="")
   for (let y = 0; y < n; y++) {
     print(`${y}`, ' ');
   }
-  // for y in range(n):
-  //     print (y,"", end="")
 
   print('');
   print(' ', '');
-  // for _ in range(n):
-  //     print ("-", end="-")
+
   for (let _ = 0; _ < n; _++) {
     print('-', '-');
   }
@@ -189,9 +190,9 @@ export function display(boardNdArray) {
     print(`${y}|`, ''); // # print the row #
     for (let x = 0; x < n; x++) {
       const piece = list[y][x]; // # get the piece to print
-      if (piece == -1) {
+      if (piece === -1) {
         print('X ', '');
-      } else if (piece == 1) {
+      } else if (piece === 1) {
         print('O ', '');
       } else if (x == n) {
         print('-', '');
@@ -206,8 +207,7 @@ export function display(boardNdArray) {
   for (let _ = 0; _ < n; _++) {
     print('-', '-');
   }
-  // for _ in range(n):
-  //     print ("-", end="-")
+
   print('--');
   flush();
   console.log('flush');

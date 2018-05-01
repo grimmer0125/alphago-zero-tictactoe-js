@@ -36,7 +36,7 @@ export default class Coach {
       const sym = this.game.getSymmetries(canonicalBoard, pi);
       sym.forEach((obj) => {
         const { b, p } = obj;
-        // QUESTION: null? sym? canonicalBoard?
+        // QUESTION: null?
         trainExamples.push([b, this.curPlayer, p, null]);
       });
 
@@ -68,16 +68,16 @@ export default class Coach {
   // It then pits the new neural network against the old one and accepts it
   // only if it wins >= updateThreshold fraction of games.
   // """
-  // numIters (3) * nnet's epochs (10) * numEps (25)?
   async learn() {
     const max = this.args.numIters + 1;
     console.log(`start learn ${this.args.numIters} times iteration-MTCS+train`);
+
+    // numIters (3) * numEps (25)?
     for (let i = 1; i < max; i++) {
       console.log(`------ITER ${i}------`);
 
       if (!this.skipFirstSelfPlay || i > 1) {
-        // TODO: Python version uses deque's maxlen,
-        // find a way to do it
+        // Python version uses deque
         let iterationTrainExamples = [];
 
         // eps_time = AverageMeter()
@@ -85,8 +85,8 @@ export default class Coach {
         // end = time.time()
 
         console.log('start %d eposides', this.args.numEps);
-        for (let i = 0; i < this.args.numEps; i++) {
-          console.log('eposides-%d', i);
+        for (let j = 0; j < this.args.numEps; j++) {
+          console.log('eposides-%d', j);
           this.mcts = new MCTS(this.game, this.nnet, this.args);
           const episodeResult = this.executeEpisode();
           iterationTrainExamples = iterationTrainExamples.concat(episodeResult);
@@ -128,6 +128,7 @@ export default class Coach {
       // const pmcts = new MCTS(this.game, this.pnet, this.args);
 
       const flattenExamples = [].concat.apply([], this.trainExamplesHistory);
+      //  nnet's training epochs: 10
       await this.nnet.train(flattenExamples);
       console.log('after training 1 time');
 
@@ -142,6 +143,8 @@ export default class Coach {
       );
       const { oneWon, twoWon, draws } = arena.playGames(this.args.arenaCompare);
       console.log('NEW/RANDOM WINS : %d / %d ; DRAWS : %d', twoWon, oneWon, draws);
+
+      // NOTE: Use AlphaZero's design, not possibily rollback to previous version
       // if ((pwins + nwins) > 0 && nwins / (pwins + nwins) < this.args.updateThreshold) {
       //   console.log('REJECTING NEW MODEL');
       //   this.nnet = this.pnet;
@@ -162,12 +165,12 @@ export default class Coach {
     return '';
   }
 
-  // TODO: low priority, serialize training objects to files
+  // TODO: serialize training objects to files
   saveTrainExamples() {
 
   }
 
-  // TODO: low priority
+  // TODO:
   loadTrainExamples() {
 
   }

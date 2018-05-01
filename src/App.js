@@ -155,7 +155,7 @@ class App extends Component {
           <div>
             {!this.state.selfTrained && !this.state.aiIsDownloaded ?
               <Button onClick={this.downloadPretrained}>
-                {'Download 32MB Pretrained Model (from Python+Keras)'}
+                {'Download 32MB Pretrained Model (from Python+Keras), needs a while'}
               </Button> : null}
           </div>
 

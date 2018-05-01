@@ -3,9 +3,10 @@ const __directions = [(1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 
 export default class Board {
   constructor(n = 3) {
     this.n = n;
+
+    // Python:
     // Create the empty board array.
     // #[None, None, None] = [None] *3
-
     // self.pieces = [None]*self.n
     // for i in range(self.n):
     //     self.pieces[i] = [0]*self.n # [[0,0,0],[0,0,0],[0,0,0]]
@@ -14,6 +15,7 @@ export default class Board {
   }
 
   get_legal_moves() {
+    // Python:
     // """Returns all the legal moves for the given color.
     // (1 for white, -1 for black)
     // @param color not used and came from previous version.
@@ -43,6 +45,7 @@ export default class Board {
   }
 
   is_win(color) {
+    // Python:
     // """Check whether the given player has collected a triplet in any direction;
     // @param color (1=white,-1=black)
     // """
@@ -97,12 +100,14 @@ export default class Board {
   }
 
   execute_move(move, color) {
+    // Python:
     // """Perform the given move on the board;
     // color gives the color pf the piece to play (1=white,-1=black)
     // """
+    // (x,y) = move
+
     // console.log('move:', move);
     let { x, y } = move;
-    // (x,y) = move
     if (x < 0) {
       if (x < -1) {
         // console.log('x position is negtive (not -1)!!');
@@ -121,13 +126,14 @@ export default class Board {
       }
     }
 
+    // Python:
+    // # Add the piece to the empty square.
+    // assert self[x][y] == 0
+    // self[x][y] = color
     if (this.pieces[x][y] === 0) {
       this.pieces[x][y] = color;
     } else {
       throw 'already colored, wrong';
     }
-    // # Add the piece to the empty square.
-    // assert self[x][y] == 0
-    // self[x][y] = color
   }
 }
