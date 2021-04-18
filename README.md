@@ -1,4 +1,4 @@
-# AlphaGo Zero Tictactoe Js
+# AlphaGo Zero Tictactoe JS
 
 Try it: https://grimmer.io/alphago-zero-tictactoe-js/. Google DeepMind AlphaGo uses enhancement learning and the algorithm is a composite of 
 
