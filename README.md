@@ -1,18 +1,31 @@
 # alphago-zero-tictactoe-js
 
+Try it: https://grimmer.io/alphago-zero-tictactoe-js/. Google DeepMind AlphaGo uses enhancement learning and the algorithm is a composite of 
+
+1. Policy Network
+2. Value Network
+3. Monte Carlo tree search (MCTS)
+
 ## Installation
 
 ```
 npm install
 ```
 
-## Dev
+### Dev
 
 ```
 npm start // build and launch its live dev web server.
 ```
 
 After `npm start`, you can also use `VS Code` with `Debugger for Chrome` extension to debug.
+
+
+### Deployment 
+
+```
+npm run deploy
+```
 
 ## Features and done itmes of todo list
 
@@ -28,6 +41,7 @@ by using Python.
 2. ~~Add UI.~~
 3. Clean up.
 4. Use service worker for cpu heavy loading part.
+5. Use TypeScript instead
 
 ## AlphaZero
 
