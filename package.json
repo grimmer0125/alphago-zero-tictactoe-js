@@ -5,7 +5,7 @@
   "homepage": "https://grimmer0125.github.io/alphago-zero-tictactoe-js",
   "dependencies": {
     "@tensorflow/tfjs": "^0.10.3",
-    "numjs": "^0.15.1",
+    "numjs": "github:grimmer0125/numjs#remove_images_dependency",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-scripts": "1.1.4",
