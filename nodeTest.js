@@ -1,4 +1,4 @@
-const nj = require('numjs');
+const nj = require('@d4c/numjs').default;
 
 const a = nj.array([0, 1, 2]);
 console.log(a);

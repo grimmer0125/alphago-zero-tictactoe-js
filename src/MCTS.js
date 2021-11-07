@@ -1,5 +1,5 @@
 import Utils from './Utils';
-import nj from 'numjs';
+import nj from '@d4c/numjs';
 
 const EPS = 1e-8;
 

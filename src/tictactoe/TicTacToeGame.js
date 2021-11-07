@@ -1,6 +1,6 @@
 import { Game } from '../Game';
 import Board from './TicTacToeLogic';
-import nj from 'numjs';
+import nj from '@d4c/numjs';
 
 // Grimmer: This class needs a lot of numpy operations
 export class TicTacToeGame extends Game {
